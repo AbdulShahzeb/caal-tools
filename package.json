@@ -1,0 +1,25 @@
+{
+  "name": "caal-tools",
+  "version": "1.0.0",
+  "description": "CAAL Tool Registry - Voice-first workflows for CAAL",
+  "scripts": {
+    "validate": "node scripts/validate.js",
+    "check-secrets": "node scripts/check-secrets.js",
+    "generate-index": "node scripts/generate-index.js",
+    "validate-all": "for dir in tools/*/*; do [ -d \"$dir\" ] && node scripts/validate.js \"$dir\"; done"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/CoreWorxLab/caal-tools.git"
+  },
+  "keywords": [
+    "caal",
+    "voice",
+    "assistant",
+    "n8n",
+    "workflows",
+    "tools"
+  ],
+  "author": "CoreWorxLab",
+  "license": "MIT"
+}

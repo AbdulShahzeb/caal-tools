@@ -1,0 +1,36 @@
+{
+  "name": "tool-name",
+  "version": "1.0.0",
+  "description": "A voice-friendly description of what this tool does",
+  "category": "utilities",
+  "voice_triggers": [
+    "example trigger with {parameter}",
+    "another way to say it"
+  ],
+  "required_services": [],
+  "required_credentials": [
+    {
+      "node": "Node Name",
+      "type": "httpHeaderAuth",
+      "name": "Service API Key",
+      "description": "Your API key (found in Settings)",
+      "header_name": "X-Api-Key"
+    }
+  ],
+  "required_variables": [
+    {
+      "name": "SERVICE_URL",
+      "description": "Your service instance URL",
+      "example": "http://192.168.1.50:8080"
+    }
+  ],
+  "author": {
+    "github": "your-github-username",
+    "name": "Your Name"
+  },
+  "tier": "experimental",
+  "tags": [],
+  "dependencies": [],
+  "created": "2026-01-14",
+  "updated": "2026-01-14"
+}

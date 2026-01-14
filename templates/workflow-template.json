@@ -1,0 +1,67 @@
+{
+  "name": "tool-name",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "tool-name",
+        "options": {}
+      },
+      "id": "webhook-trigger",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [250, 300],
+      "webhookId": "",
+      "notes": "REQUIRED: Add a voice-friendly description here.\n\nExample: Gets the current price of a stock by ticker symbol.\nUser says: \"what's the price of AAPL?\"\n\nParameters:\n- query (string, required): The search term or identifier"
+    },
+    {
+      "parameters": {},
+      "id": "your-logic-here",
+      "name": "Your Logic Here",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [450, 300]
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "respond-webhook",
+      "name": "Respond to Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [650, 300]
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Your Logic Here",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Your Logic Here": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true
+  }
+}
