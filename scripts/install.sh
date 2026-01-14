@@ -69,7 +69,7 @@ if [ -n "$VARIABLES" ]; then
     echo "$name"
     echo "  $desc"
     echo "  Example: $example"
-    read -p "  > " value
+    read -p "  > " value < /dev/tty
     VAR_VALUES[$name]="$value"
     echo ""
   done <<< "$VARIABLES"
