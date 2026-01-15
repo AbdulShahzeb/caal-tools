@@ -188,13 +188,29 @@ async function main() {
 
   // Build required_credentials from detected credential types
   const requiredCredentials = [];
+  const credTypeDisplayName = {
+    httpHeaderAuth: 'Header Auth',
+    httpBasicAuth: 'Basic Auth',
+    httpDigestAuth: 'Digest Auth',
+    oAuth2Api: 'OAuth2',
+    sshPassword: 'SSH Password',
+    sshPrivateKey: 'SSH Private Key',
+  };
+
   for (const credType of credentialTypes) {
+    const servicePart = toolName.split(/[_-]/)[0].toUpperCase();
+    const typePart = credTypeDisplayName[credType] || credType;
+    const isSSH = credType.toLowerCase().includes('ssh');
+    const credName = isSSH ? `${servicePart} SSH` : `${servicePart} API Key`;
+    const credDesc = isSSH
+      ? `${servicePart} - ${typePart} Credential`
+      : `${servicePart} API - ${typePart} Credential`;
     requiredCredentials.push({
-      node: "HTTP Request",
+      node: isSSH ? "SSH" : "HTTP Request",
       type: credType,
-      name: `${toolName.split('_')[0]} API Key`,
-      description: "API key for authentication",
-      header_name: "Authorization"
+      name: credName,
+      description: credDesc,
+      header_name: isSSH ? undefined : "Authorization"
     });
   }
 

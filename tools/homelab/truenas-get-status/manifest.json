@@ -14,7 +14,7 @@
       "node": "HTTP Request",
       "type": "httpHeaderAuth",
       "name": "TrueNAS API Key",
-      "description": "API key from TrueNAS (Credentials > API Keys > Add)",
+      "description": "TrueNAS API - Header Auth Credential",
       "header_name": "Authorization",
       "header_value_prefix": "Bearer "
     }
