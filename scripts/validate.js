@@ -61,6 +61,27 @@ if (manifest) {
   if (manifest.author && !manifest.author.github) {
     errors.push('Author must include github username');
   }
+
+  // Validate folder path matches manifest
+  const normalizedPath = toolDir.replace(/\\/g, '/');
+  const pathParts = normalizedPath.split('/').filter(p => p);
+  const folderName = pathParts[pathParts.length - 1];
+  const folderCategory = pathParts[pathParts.length - 2];
+
+  // Check folder name matches manifest name
+  if (manifest.name && folderName !== manifest.name) {
+    errors.push(`Folder name "${folderName}" doesn't match manifest name "${manifest.name}"`);
+  }
+
+  // Check folder is in correct category
+  if (manifest.category && folderCategory !== manifest.category) {
+    errors.push(`Folder category "${folderCategory}" doesn't match manifest category "${manifest.category}". Move to tools/${manifest.category}/${manifest.name}/`);
+  }
+
+  // Check name is kebab-case
+  if (manifest.name && !/^[a-z0-9]+(-[a-z0-9]+)*$/.test(manifest.name)) {
+    errors.push(`Tool name "${manifest.name}" must be kebab-case (lowercase letters, numbers, hyphens only)`);
+  }
 }
 
 // Validate workflow
