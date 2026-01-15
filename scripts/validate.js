@@ -71,6 +71,10 @@ try {
   errors.push(`Invalid JSON in workflow.json: ${e.message}`);
 }
 
+// Known credential types
+const predefinedTypes = ['githubApi', 'slackApi', 'notionApi', 'googleApi', 'discordApi', 'spotifyApi', 'twilioApi', 'telegramApi', 'homeAssistantApi'];
+const genericTypes = ['httpHeaderAuth', 'httpBasicAuth', 'httpDigestAuth', 'oAuth2Api', 'sshPassword', 'sshPrivateKey'];
+
 if (workflow) {
   // Check for webhook trigger
   const webhookNode = workflow.nodes?.find(n =>
@@ -94,6 +98,48 @@ if (workflow) {
 
   if (!respondNode) {
     warnings.push('Consider adding a "Respond to Webhook" node for proper voice responses');
+  }
+
+  // Check for availableInMCP setting
+  if (!workflow.settings?.availableInMCP) {
+    errors.push('Workflow must have settings.availableInMCP: true for MCP tool access');
+  }
+
+  // Check credential IDs are null (for portability)
+  for (const node of workflow.nodes || []) {
+    if (node.credentials) {
+      for (const [credType, credInfo] of Object.entries(node.credentials)) {
+        // Check ID is null
+        if (credInfo.id !== null) {
+          errors.push(`Credential ID must be null for portability (node: ${node.name}, type: ${credType})`);
+        }
+        // Check credential name exists
+        if (!credInfo.name) {
+          errors.push(`Credential must have a name (node: ${node.name}, type: ${credType})`);
+        }
+      }
+    }
+  }
+}
+
+// Validate manifest credentials match workflow
+if (manifest && manifest.required_credentials) {
+  for (const cred of manifest.required_credentials) {
+    // Check auth_type is specified
+    if (!cred.auth_type || !['predefined', 'generic'].includes(cred.auth_type)) {
+      errors.push(`Credential "${cred.name}" must have auth_type: "predefined" or "generic"`);
+    }
+    // Check credential_type is specified
+    if (!cred.credential_type) {
+      errors.push(`Credential "${cred.name}" must have credential_type specified`);
+    }
+    // Validate auth_type matches credential_type
+    if (cred.auth_type === 'predefined' && !predefinedTypes.includes(cred.credential_type)) {
+      warnings.push(`Credential "${cred.name}" has auth_type "predefined" but credential_type "${cred.credential_type}" is not a known predefined type`);
+    }
+    if (cred.auth_type === 'generic' && !genericTypes.includes(cred.credential_type)) {
+      warnings.push(`Credential "${cred.name}" has auth_type "generic" but credential_type "${cred.credential_type}" is not a known generic type`);
+    }
   }
 }
 

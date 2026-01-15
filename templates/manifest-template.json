@@ -10,11 +10,12 @@
   "required_services": [],
   "required_credentials": [
     {
-      "node": "Node Name",
-      "type": "httpHeaderAuth",
+      "auth_type": "generic",
+      "credential_type": "httpHeaderAuth",
       "name": "Service API Key",
-      "description": "Your API key (found in Settings)",
-      "header_name": "X-Api-Key"
+      "description": "Service API - Header Auth",
+      "node": "HTTP Request",
+      "header_name": "Authorization"
     }
   ],
   "required_variables": [
@@ -25,8 +26,7 @@
     }
   ],
   "author": {
-    "github": "your-github-username",
-    "name": "Your Name"
+    "github": "your-github-username"
   },
   "tier": "experimental",
   "tags": [],

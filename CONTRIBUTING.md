@@ -35,6 +35,7 @@ cp ../../../templates/readme-template.md README.md
 2. Export the workflow JSON
 3. Replace any hardcoded URLs with `${VARIABLE_NAME}` placeholders
 4. Ensure your webhook node has a description in the notes field
+5. Enable MCP access: `"settings": { "availableInMCP": true }`
 
 **Important:** The webhook description is what CAAL uses to understand what your tool does. Write it in plain English, include example phrases, and document the parameters.
 
@@ -55,13 +56,46 @@ Update `manifest.json` with:
 |-------|-------------|
 | `name` | kebab-case identifier (e.g., `jellyseerr-search`) |
 | `description` | Voice-friendly description of what it does |
-| `category` | One of: `smart-home`, `media`, `homelab`, `productivity`, `utilities` |
+| `category` | One of: `smart-home`, `media`, `homelab`, `productivity`, `utilities`, `social`, `other` |
 | `voice_triggers` | Array of example phrases (at least 2) |
 | `required_services` | External services needed (e.g., `["jellyseerr"]`) |
-| `required_credentials` | Credentials to create in n8n |
+| `required_credentials` | Credentials to create in n8n (see schema below) |
 | `required_variables` | URLs or config values the user must provide |
-| `author` | Your GitHub username and name |
+| `author` | Your GitHub username |
 | `tags` | Searchable keywords |
+
+### Credential Schema
+
+Each credential in `required_credentials` must specify:
+
+```json
+{
+  "auth_type": "predefined",      // or "generic"
+  "credential_type": "githubApi", // n8n type name
+  "name": "github_account",       // credential name in n8n
+  "description": "GitHub API"     // human-readable
+}
+```
+
+**Predefined types** (n8n built-in):
+- `githubApi`, `slackApi`, `notionApi`, `googleApi`, `discordApi`
+- `spotifyApi`, `twilioApi`, `telegramApi`, `homeAssistantApi`
+
+**Generic types** (manual setup):
+- `httpHeaderAuth`, `httpBasicAuth`, `httpDigestAuth`
+- `oAuth2Api`, `sshPassword`, `sshPrivateKey`
+
+Example for generic header auth:
+```json
+{
+  "auth_type": "generic",
+  "credential_type": "httpHeaderAuth",
+  "name": "TrueNAS API Key",
+  "description": "TrueNAS API - Header Auth",
+  "node": "HTTP Request",
+  "header_name": "Authorization"
+}
+```
 
 ### 6. Write the README
 

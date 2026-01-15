@@ -188,7 +188,22 @@ async function main() {
 
   // Build required_credentials from detected credential types
   const requiredCredentials = [];
-  const credTypeDisplayName = {
+
+  // Known predefined credential types (n8n built-in)
+  const predefinedTypes = {
+    githubApi: 'GitHub API',
+    slackApi: 'Slack API',
+    notionApi: 'Notion API',
+    googleApi: 'Google API',
+    discordApi: 'Discord API',
+    spotifyApi: 'Spotify API',
+    twilioApi: 'Twilio API',
+    telegramApi: 'Telegram API',
+    homeAssistantApi: 'Home Assistant API',
+  };
+
+  // Generic credential type display names
+  const genericTypeNames = {
     httpHeaderAuth: 'Header Auth',
     httpBasicAuth: 'Basic Auth',
     httpDigestAuth: 'Digest Auth',
@@ -199,19 +214,34 @@ async function main() {
 
   for (const credType of credentialTypes) {
     const servicePart = toolName.split(/[_-]/)[0].toUpperCase();
-    const typePart = credTypeDisplayName[credType] || credType;
+    const isPredefined = predefinedTypes.hasOwnProperty(credType);
     const isSSH = credType.toLowerCase().includes('ssh');
-    const credName = isSSH ? `${servicePart} SSH` : `${servicePart} API Key`;
-    const credDesc = isSSH
-      ? `${servicePart} - ${typePart} Credential`
-      : `${servicePart} API - ${typePart} Credential`;
-    requiredCredentials.push({
-      node: isSSH ? "SSH" : "HTTP Request",
-      type: credType,
-      name: credName,
-      description: credDesc,
-      header_name: isSSH ? undefined : "Authorization"
-    });
+
+    if (isPredefined) {
+      // Predefined n8n credential type
+      requiredCredentials.push({
+        auth_type: 'predefined',
+        credential_type: credType,
+        name: `${servicePart.toLowerCase()}_account`,
+        description: predefinedTypes[credType],
+        node: 'Various'
+      });
+    } else {
+      // Generic credential type
+      const typePart = genericTypeNames[credType] || credType;
+      const credName = isSSH ? `${servicePart} SSH` : `${servicePart} API Key`;
+      const credDesc = isSSH
+        ? `${servicePart} - ${typePart} Credential`
+        : `${servicePart} API - ${typePart} Credential`;
+      requiredCredentials.push({
+        auth_type: 'generic',
+        credential_type: credType,
+        name: credName,
+        description: credDesc,
+        node: isSSH ? 'SSH' : 'HTTP Request',
+        header_name: isSSH ? undefined : 'Authorization'
+      });
+    }
   }
 
   // Prompt for voice triggers
