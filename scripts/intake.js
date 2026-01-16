@@ -271,11 +271,11 @@ async function main() {
 
   // Prompt for voice triggers
   console.log(`  Enter voice trigger examples (how users would say this):`);
-  const trigger1 = await question(`  Trigger 1: "Hey Cal, `);
-  const trigger2 = await question(`  Trigger 2: "Hey Cal, `);
+  const trigger1 = await question(`  Trigger 1: Hey Cal, `);
+  const trigger2 = await question(`  Trigger 2: Hey Cal, `);
 
   // Prompt for service name
-  const serviceName = await question(`\n  Required service (e.g., truenas, jellyfin): `);
+  const servicesInput = await question(`\n  Required services (comma-separated, e.g., truenas, jellyfin): `);
 
   const manifest = {
     name: toolName.replace(/_/g, '-'),
@@ -283,7 +283,7 @@ async function main() {
     description: webhookDescription.split('\n')[0] || `${toolName} tool`,
     category: category,
     voice_triggers: [trigger1, trigger2].filter(t => t),
-    required_services: serviceName ? [serviceName.toLowerCase()] : [],
+    required_services: servicesInput ? servicesInput.split(',').map(s => s.trim().toLowerCase()).filter(s => s) : [],
     required_credentials: requiredCredentials,
     required_variables: requiredVariables,
     author: {
