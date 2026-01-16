@@ -399,7 +399,13 @@ ${webhookDescription || 'TODO: Add description'}
 
 ## Installation
 
-### Quick Install
+### CAAL Frontend (Recommended)
+
+1. Open CAAL web interface
+2. Browse to this tool
+3. Click Install
+
+### Install Script
 
 \`\`\`bash
 curl -s https://raw.githubusercontent.com/CoreWorxLab/caal-tools/main/scripts/install.sh | bash -s ${manifest.name}
