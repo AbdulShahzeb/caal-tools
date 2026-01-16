@@ -11,8 +11,8 @@
     "required_services": [
       "google calendar"
     ],
-    "tier": "experimental",
-    "author": "cmac",
+    "tier": "community",
+    "author": "cmac86",
     "tags": [
       "productivity",
       "google calendar"
@@ -31,8 +31,8 @@
     "required_services": [
       "truenas"
     ],
-    "tier": "experimental",
-    "author": "cmac",
+    "tier": "community",
+    "author": "cmac86",
     "tags": [
       "homelab",
       "truenas"
