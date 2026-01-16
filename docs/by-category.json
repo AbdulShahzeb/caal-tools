@@ -46,7 +46,6 @@
     }
   ],
   "media": [],
-  "other": [],
   "productivity": [
     {
       "name": "calendar-get-events",
@@ -70,6 +69,5 @@
     }
   ],
   "smart-home": [],
-  "social": [],
   "utilities": []
 }
