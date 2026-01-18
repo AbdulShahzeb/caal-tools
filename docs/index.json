@@ -40,6 +40,26 @@
     "updated": "2026-01-18"
   },
   {
+    "name": "github-get-caal-repo-activity2",
+    "description": "Gets open pull requests, issues, and unread notifications for a GitHub repository.",
+    "category": "productivity",
+    "path": "tools/productivity/github-get-caal-repo-activity2",
+    "voice_triggers": [
+      "What's happening on the CAAL repo?",
+      "Check my GitHub activity"
+    ],
+    "required_services": [
+      "GitHub"
+    ],
+    "tier": "coreworxlab",
+    "author": "cmac86",
+    "tags": [
+      "productivity",
+      "GitHub"
+    ],
+    "updated": "2026-01-18"
+  },
+  {
     "name": "truenas-control-app",
     "description": "Control TrueNAS apps - start, stop, or restart. Parameters: app_name (required, string - the app name like 'radarr' or 'jellyfin'), action (required, string - 'start', 'stop', or 'restart')",
     "category": "homelab",
