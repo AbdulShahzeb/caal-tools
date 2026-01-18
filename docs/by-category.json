@@ -66,6 +66,26 @@
         "google calendar"
       ],
       "updated": "2026-01-16"
+    },
+    {
+      "name": "github-get-caal-repo-activity",
+      "description": "Gets open pull requests, issues, and unread notifications for the CAAL GitHub repository with voice-formatted summary.",
+      "category": "productivity",
+      "path": "tools/productivity/github-get-caal-repo-activity",
+      "voice_triggers": [
+        "What's happening on the CAAL repo?",
+        "Check for open PRs and issues on the CAAL repo"
+      ],
+      "required_services": [
+        "GitHub"
+      ],
+      "tier": "coreworxlab",
+      "author": "cmac86",
+      "tags": [
+        "productivity",
+        "GitHub"
+      ],
+      "updated": "2026-01-18"
     }
   ],
   "smart-home": [],
