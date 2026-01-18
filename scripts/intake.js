@@ -31,7 +31,17 @@ const SECRET_PATTERNS = [
   { name: 'Bearer token', regex: /bearer\s+[a-zA-Z0-9_-]{20,}/gi },
   { name: 'OpenAI key', regex: /sk-[a-zA-Z0-9]{20,}/g },
   { name: 'GitHub PAT', regex: /ghp_[a-zA-Z0-9]{36}/g },
+  { name: 'AWS Access Key', regex: /AKIA[0-9A-Z]{16}/g },
+  { name: 'Slack token', regex: /xox[baprs]-[0-9a-zA-Z]{10,}/g },
+  { name: 'Private key', regex: /-----BEGIN\s+(RSA\s+|EC\s+|DSA\s+)?PRIVATE\s+KEY-----/gi },
   { name: 'Password', regex: /password\s*[:=]\s*["'][^"']+["']/gi },
+];
+
+// Expression patterns that reference secrets via n8n expressions
+const EXPRESSION_SECRET_PATTERNS = [
+  { name: 'Environment variable secret', regex: /\{\{.*\$env\.[A-Z_]*(?:KEY|TOKEN|SECRET|PASSWORD|API)[A-Z_]*.*\}\}/gi },
+  { name: 'JSON secret field', regex: /\{\{.*\$json\.(?:apiKey|api_key|token|secret|password).*\}\}/gi },
+  { name: 'Binary secret field', regex: /\{\{.*\$binary\.(?:key|token|secret).*\}\}/gi },
 ];
 
 // URL pattern to detect hardcoded URLs
@@ -156,7 +166,9 @@ async function main() {
   console.log(`[1/7] Checking for hardcoded secrets...`);
   const workflowStr = JSON.stringify(workflow);
   const secretFindings = [];
+  const expressionSecretFindings = [];
 
+  // Check hardcoded secrets
   for (const { name, regex } of SECRET_PATTERNS) {
     regex.lastIndex = 0;
     if (regex.test(workflowStr)) {
@@ -164,13 +176,34 @@ async function main() {
     }
   }
 
+  // Check expression-based secrets
+  for (const { name, regex } of EXPRESSION_SECRET_PATTERNS) {
+    regex.lastIndex = 0;
+    const matches = workflowStr.match(regex);
+    if (matches && matches.length > 0) {
+      expressionSecretFindings.push(`${name} (${matches.length} occurrence${matches.length > 1 ? 's' : ''})`);
+    }
+  }
+
   if (secretFindings.length > 0) {
-    console.error(`\n  BLOCKED: Found potential secrets:`);
+    console.error(`\n  BLOCKED: Found hardcoded secrets:`);
     secretFindings.forEach(s => console.error(`    - ${s}`));
-    console.error(`\n  Please remove secrets from the workflow and try again.\n`);
+    console.error(`\n  Please configure these as n8n Credentials in your workflow and re-export.`);
+    console.error(`  Learn more: https://docs.n8n.io/credentials/\n`);
     rl.close();
     process.exit(1);
   }
+
+  if (expressionSecretFindings.length > 0) {
+    console.error(`\n  BLOCKED: Found expression-based secrets:`);
+    expressionSecretFindings.forEach(s => console.error(`    - ${s}`));
+    console.error(`\n  Expressions like {{ $env.API_KEY }} or {{ $json.password }} expose secrets.`);
+    console.error(`  Please use n8n Credentials instead.`);
+    console.error(`  Learn more: https://docs.n8n.io/credentials/\n`);
+    rl.close();
+    process.exit(1);
+  }
+
   console.log(`  No secrets detected.\n`);
 
   // Step 2: Detect hardcoded URLs
@@ -281,7 +314,25 @@ async function main() {
     console.log(`  Webhook description found.`);
   }
 
-  console.log(`  Credential IDs nullified.`);
+  // Show credential details
+  if (credentialTypes.size > 0) {
+    console.log(`\n  Found ${credentialTypes.size} credential type(s):`);
+    for (const credType of credentialTypes) {
+      // Find the credential name from the workflow
+      let credName = null;
+      for (const node of sanitized.nodes) {
+        if (node.credentials?.[credType]?.name) {
+          credName = node.credentials[credType].name;
+          break;
+        }
+      }
+      console.log(`    ✓ ${credType}${credName ? ` (${credName})` : ''}`);
+    }
+    console.log(`  Credential IDs will be nullified.`);
+  } else {
+    console.log(`  No credentials found.`);
+  }
+
   console.log(`  ${Object.keys(urlReplacements).length} URL(s) replaced.`);
   console.log(`  ${Object.keys(rlReplacements).length} resource locator(s) converted.`);
   if (sanitized.meta) console.log(`  Instance ID stripped from meta.`);
