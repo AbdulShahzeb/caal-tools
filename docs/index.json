@@ -1,1 +1,24 @@
-[]
+[
+  {
+    "id": "k5GzHnfCQzMoajwKyg4iWA",
+    "name": "truenas-get-status",
+    "version": "1.0.0",
+    "description": "Gets TrueNAS system status including CPU, memory, storage pools, and running apps.",
+    "category": "homelab",
+    "path": "tools/homelab/truenas-get-status",
+    "voice_triggers": [
+      "What's my TrueNAS status?",
+      "Check my NAS"
+    ],
+    "required_services": [
+      "truenas"
+    ],
+    "tier": "coreworxlab",
+    "author": "cmac86",
+    "tags": [
+      "homelab",
+      "truenas"
+    ],
+    "updated": "2026-01-19"
+  }
+]
