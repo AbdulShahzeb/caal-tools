@@ -48,5 +48,25 @@
   "media": [],
   "productivity": [],
   "smart-home": [],
-  "utilities": []
+  "utilities": [
+    {
+      "id": "VtKVa5n4Y1oDf8okS1gnzQ",
+      "name": "espn-get-nfl-scores",
+      "version": "1.0.0",
+      "description": "Gets live NFL game scores, standings, and matchups with optional team filtering.",
+      "category": "utilities",
+      "path": "tools/utilities/espn-get-nfl-scores",
+      "voice_triggers": [
+        "what are the NFL scores?",
+        "what's the score in the Seahawks game?"
+      ],
+      "required_services": [],
+      "tier": "coreworxlab",
+      "author": "cmac86",
+      "tags": [
+        "utilities"
+      ],
+      "updated": "2026-01-19"
+    }
+  ]
 }
