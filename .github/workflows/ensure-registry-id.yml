@@ -31,6 +31,44 @@ jobs:
           echo "$changed" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
 
+      - name: Check for existing tools (updates)
+        id: check-existing
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          # Extract unique tool directories from changed files
+          tool_dirs=$(echo "${{ steps.changed.outputs.files }}" | grep -oE 'tools/[^/]+/[^/]+' | sort -u)
+
+          existing_tools=""
+          for tool_dir in $tool_dirs; do
+            # Check if manifest.json exists on main branch
+            if git show origin/main:$tool_dir/manifest.json &>/dev/null; then
+              tool_name=$(basename "$tool_dir")
+              existing_tools="$existing_tools $tool_name"
+            fi
+          done
+
+          if [ -n "$existing_tools" ]; then
+            echo "is_update=true" >> $GITHUB_OUTPUT
+            echo "tools=$existing_tools" >> $GITHUB_OUTPUT
+            echo "::notice::This PR updates existing tool(s):$existing_tools"
+
+            # Add label to PR
+            gh pr edit ${{ github.event.pull_request.number }} --add-label "tool-update" || true
+
+            # Add comment to PR
+            gh pr comment ${{ github.event.pull_request.number }} --body "⚠️ **Tool Update Detected**
+
+This PR modifies existing tool(s):$existing_tools
+
+Please verify:
+- [ ] Version has been incremented in manifest.json
+- [ ] Changes are backwards compatible or documented
+- [ ] Original author is aware (if different submitter)"
+          else
+            echo "is_update=false" >> $GITHUB_OUTPUT
+          fi
+
       - name: Check and add registry IDs
         run: node scripts/ensure-registry-id.js --changed "${{ steps.changed.outputs.files }}"
 
