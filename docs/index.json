@@ -60,6 +60,28 @@
     "updated": "2026-01-20"
   },
   {
+    "id": "mPBKmNoVB28MvIvZZH-B4Q",
+    "name": "notion-add-task",
+    "version": "1.0.0",
+    "description": "Adds a task to Notion with optional due date parsing (supports today, tomorrow, day names, and specific dates).",
+    "category": "productivity",
+    "path": "tools/productivity/notion-add-task",
+    "voice_triggers": [
+      "Add task buy groceries",
+      "Add task call mom due tomorrow"
+    ],
+    "required_services": [
+      "notion"
+    ],
+    "tier": "coreworxlab",
+    "author": "cmac86",
+    "tags": [
+      "productivity",
+      "notion"
+    ],
+    "updated": "2026-01-21"
+  },
+  {
     "id": "q4Ib8fi2X__AxW72u3C4Uw",
     "name": "truenas-control-app",
     "version": "1.0.0",
