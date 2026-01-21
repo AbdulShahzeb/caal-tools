@@ -19,6 +19,25 @@
     "updated": "2026-01-19"
   },
   {
+    "id": "1lTMx-UwUETW-tn9yHDrbQ",
+    "name": "espn-get-nhl-schedule",
+    "version": "1.0.0",
+    "description": "Gets upcoming NHL games for a specified team with opponent and date information.",
+    "category": "sports",
+    "path": "tools/sports/espn-get-nhl-schedule",
+    "voice_triggers": [
+      "When do the Canucks play next?",
+      "What's the Maple Leafs schedule?"
+    ],
+    "required_services": [],
+    "tier": "coreworxlab",
+    "author": "cmac86",
+    "tags": [
+      "sports"
+    ],
+    "updated": "2026-01-21"
+  },
+  {
     "id": "unNGy4Z4eRfgicmlcgbvDg",
     "name": "google-tasks-add-task",
     "version": "1.0.0",
