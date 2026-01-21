@@ -47,7 +47,7 @@ function createRegistryStickyNote(registryId, version, toolName, description, ca
       width: 360,
     },
     type: 'n8n-nodes-base.stickyNote',
-    position: [-200, 100],
+    position: [-784, -288],
     typeVersion: 1,
     id: generateUUID(),
     name: 'Sticky Note',
