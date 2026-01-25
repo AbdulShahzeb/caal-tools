@@ -58,6 +58,58 @@ curl -s https://raw.githubusercontent.com/CoreWorxLab/caal-tools/main/scripts/in
 5. Activate the workflow
 6. Tell CAAL to refresh: `curl -X POST http://localhost:8889/reload-tools`
 
+## Tool Types
+
+### Individual Tools
+Single-purpose tools that do one thing well.
+- Named: `service_action_object` (e.g., `truenas_get_status`)
+- One workflow, one action
+
+### Tool Suites
+Multi-action tools that group related functionality.
+- Named: `service` (e.g., `google_tasks`, `truenas`)
+- One workflow, multiple actions via Switch node
+- Actions like: get, add, complete, delete, control
+
+**Example:** `google_tasks` suite handles:
+- "What's on my task list?" → `action: get`
+- "Add task buy groceries" → `action: add`
+- "Mark done the groceries task" → `action: complete`
+
+## Manifest Schema
+
+Each tool has a `manifest.json`:
+
+```json
+{
+  "id": "unique-registry-id",
+  "name": "google_tasks",
+  "friendlyName": "Google Tasks",
+  "version": "1.0.0",
+  "description": "Manage Google Tasks - get, add, complete, and delete tasks.",
+  "category": "productivity",
+  "toolSuite": true,
+  "actions": ["get", "add", "complete", "delete"],
+  "icon": "google_tasks.svg",
+  "voice_triggers": [
+    "What's on my task list?",
+    "Add task buy groceries"
+  ],
+  "required_services": ["google tasks"],
+  "required_credentials": [...],
+  "required_variables": [...],
+  "author": { "github": "username" },
+  "tier": "community",
+  "tags": ["productivity", "google"]
+}
+```
+
+**Suite-specific fields:**
+- `toolSuite`: `true` for suites, `false` for individual tools
+- `actions`: Array of available actions (suites only)
+- `friendlyName`: Human-readable display name
+- `icon`: Optional icon filename (see `/icons/`)
+
 ## Contribute
 
 We need tools! See [CONTRIBUTING.md](CONTRIBUTING.md) for how to submit your own.
