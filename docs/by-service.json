@@ -1,50 +1,4 @@
 {
-  "truenas": [
-    {
-      "id": "q4Ib8fi2X__AxW72u3C4Uw",
-      "name": "truenas-control-app",
-      "version": "1.0.0",
-      "description": "Starts, stops, or restarts a TrueNAS app and polls for completion status.",
-      "category": "homelab",
-      "path": "tools/homelab/truenas-control-app",
-      "voice_triggers": [
-        "Restart Radarr",
-        "Stop Jellyfin"
-      ],
-      "required_services": [
-        "truenas"
-      ],
-      "tier": "coreworxlab",
-      "author": "cmac86",
-      "tags": [
-        "homelab",
-        "truenas"
-      ],
-      "updated": "2026-01-19"
-    },
-    {
-      "id": "k5GzHnfCQzMoajwKyg4iWA",
-      "name": "truenas-get-status",
-      "version": "1.0.0",
-      "description": "Gets TrueNAS system status including CPU, memory, storage pools, and running apps.",
-      "category": "homelab",
-      "path": "tools/homelab/truenas-get-status",
-      "voice_triggers": [
-        "What's my TrueNAS status?",
-        "Check my NAS"
-      ],
-      "required_services": [
-        "truenas"
-      ],
-      "tier": "coreworxlab",
-      "author": "cmac86",
-      "tags": [
-        "homelab",
-        "truenas"
-      ],
-      "updated": "2026-01-19"
-    }
-  ],
   "sonarr": [
     {
       "id": "4zWBH7DWVlTgQ25E2uwr_Q",
@@ -69,53 +23,7 @@
       "updated": "2026-01-26"
     }
   ],
-  "google tasks": [
-    {
-      "id": "unNGy4Z4eRfgicmlcgbvDg",
-      "name": "google-tasks-add-task",
-      "version": "1.0.0",
-      "description": "Adds a task to Google Tasks with optional notes and due date.",
-      "category": "productivity",
-      "path": "tools/productivity/google-tasks-add-task",
-      "voice_triggers": [
-        "Add task buy groceries",
-        "Remind me to submit the report by Friday"
-      ],
-      "required_services": [
-        "google tasks"
-      ],
-      "tier": "coreworxlab",
-      "author": "cmac86",
-      "tags": [
-        "productivity",
-        "google tasks"
-      ],
-      "updated": "2026-01-20"
-    }
-  ],
   "notion": [
-    {
-      "id": "mPBKmNoVB28MvIvZZH-B4Q",
-      "name": "notion-add-task",
-      "version": "1.0.0",
-      "description": "Adds a task to Notion with optional due date parsing (supports today, tomorrow, day names, and specific dates).",
-      "category": "productivity",
-      "path": "tools/productivity/notion-add-task",
-      "voice_triggers": [
-        "Add task buy groceries",
-        "Add task call mom due tomorrow"
-      ],
-      "required_services": [
-        "notion"
-      ],
-      "tier": "coreworxlab",
-      "author": "cmac86",
-      "tags": [
-        "productivity",
-        "notion"
-      ],
-      "updated": "2026-01-21"
-    },
     {
       "id": "ytCtCC0hUVBaACOsVhOKYg",
       "name": "notion-tasks",
