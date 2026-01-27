@@ -1,1 +1,26 @@
-{}
+{
+  "google tasks": [
+    {
+      "id": "JLBpNNUkMXzOZDojN3VdrA",
+      "name": "google-tasks",
+      "version": "1.0.0",
+      "description": "Manage Google Tasks - get, add, complete, and delete tasks with optional due dates and notes.",
+      "category": "productivity",
+      "path": "tools/productivity/google-tasks",
+      "voice_triggers": [
+        "What's on my task list?",
+        "Add task buy groceries"
+      ],
+      "required_services": [
+        "google tasks"
+      ],
+      "tier": "coreworxlab",
+      "author": "cmac86",
+      "tags": [
+        "productivity",
+        "google tasks"
+      ],
+      "updated": "2026-01-26"
+    }
+  ]
+}
