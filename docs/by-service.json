@@ -22,5 +22,29 @@
       ],
       "updated": "2026-01-26"
     }
+  ],
+  "notion": [
+    {
+      "id": "Wv9iVQRT_j_fyCeMWcz_xA",
+      "name": "notion-tasks",
+      "version": "1.0.0",
+      "description": "Manage tasks in Notion - get, add, complete, and delete tasks with support for due dates and filtering.",
+      "category": "productivity",
+      "path": "tools/productivity/notion-tasks",
+      "voice_triggers": [
+        "What's on my Notion task list?",
+        "Add task buy groceries due Friday"
+      ],
+      "required_services": [
+        "notion"
+      ],
+      "tier": "coreworxlab",
+      "author": "cmac86",
+      "tags": [
+        "productivity",
+        "notion"
+      ],
+      "updated": "2026-01-27"
+    }
   ]
 }
