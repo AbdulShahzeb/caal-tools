@@ -46,10 +46,12 @@ for (const category of categories) {
     const entry = {
       id: manifest.id || null,  // Registry ID for tracking
       name: manifest.name,
+      friendlyName: manifest.friendlyName || null,
       version: manifest.version || '1.0.0',
       description: manifest.description,
       category: category,
       path: `tools/${category}/${tool}`,
+      icon: manifest.icon || null,
       voice_triggers: manifest.voice_triggers || [],
       required_services: manifest.required_services || [],
       tier: manifest.tier || 'experimental',
