@@ -25,6 +25,30 @@
         "radarr"
       ],
       "updated": "2026-01-29"
+    },
+    {
+      "id": "dXkRDDTIOPPE8sYAtNs6NQ",
+      "name": "sonarr",
+      "friendlyName": "Sonarr",
+      "version": "1.0.0",
+      "description": "Manage Sonarr TV shows - view upcoming episodes and search your library.",
+      "category": "media",
+      "path": "tools/media/sonarr",
+      "icon": "sonarr.svg",
+      "voice_triggers": [
+        "What TV shows are coming up?",
+        "Search for Breaking Bad on Sonarr"
+      ],
+      "required_services": [
+        "sonarr"
+      ],
+      "tier": "coreworxlab",
+      "author": "cmac86",
+      "tags": [
+        "media",
+        "sonarr"
+      ],
+      "updated": "2026-01-29"
     }
   ],
   "productivity": [
