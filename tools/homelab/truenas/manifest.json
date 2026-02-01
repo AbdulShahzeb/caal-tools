@@ -1,0 +1,51 @@
+{
+  "id": "aQ8KoJ2Nc2Z8ftAqlp5S-w",
+  "name": "truenas",
+  "friendlyName": "TrueNAS",
+  "version": "1.0.0",
+  "description": "Manage TrueNAS system status and control apps - check system health, resources, and storage pools, or start, stop, and restart applications.",
+  "category": "homelab",
+  "toolSuite": true,
+  "actions": [
+    "status",
+    "control"
+  ],
+  "icon": "truenas.svg",
+  "voice_triggers": [
+    "What's my TrueNAS status?",
+    "Check my NAS"
+  ],
+  "required_services": [
+    "truenas"
+  ],
+  "required_credentials": [
+    {
+      "credential_type": "httpHeaderAuth",
+      "name": "HTTPHEADERAUTH_CREDENTIAL",
+      "description": "n8n credential type: httpHeaderAuth"
+    }
+  ],
+  "required_variables": [
+    {
+      "name": "TRUENAS_URL",
+      "description": "Your TrueNAS server URL and port",
+      "example": "http://192.168.1.100:8080"
+    },
+    {
+      "name": "CAAL_ANNOUNCE_URL",
+      "description": "Your CAAL announcement service URL",
+      "example": "http://192.168.1.50:8889"
+    }
+  ],
+  "author": {
+    "github": "cmac86"
+  },
+  "tier": "coreworxlab",
+  "tags": [
+    "homelab",
+    "truenas"
+  ],
+  "dependencies": [],
+  "created": "2026-02-01",
+  "updated": "2026-02-01"
+}
