@@ -1,0 +1,642 @@
+{
+  "name": "x_twitter",
+  "nodes": [
+    {
+      "parameters": {
+        "resource": "user",
+        "me": true
+      },
+      "type": "n8n-nodes-base.twitter",
+      "typeVersion": 2,
+      "position": [
+        -464,
+        512
+      ],
+      "id": "24aadb0d-e431-4cf8-a45c-52e7ce929017",
+      "name": "Get Self",
+      "credentials": {
+        "twitterOAuth2Api": {
+          "id": null,
+          "name": "${TWITTEROAUTH2API_CREDENTIAL}"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "67fd363d-d77a-4ec7-ad89-103113bdc388",
+              "leftValue": "={{ $('Validate Input').item.json.username }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -688,
+        400
+      ],
+      "id": "dd1d048e-e6ff-4b2b-a239-42d12ffaa8f5",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ $json }}",
+        "options": {},
+        "path": "x_twitter"
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        -16,
+        256
+      ],
+      "id": "49580b63-4f94-4145-b099-6467b402bf60",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const action = $('Validate Input').item.json.action;\n\nreturn {\n  error: true,\n  message: `Sorry, I don't know how to handle \"${action}\" requests yet. I can tweet, send DMs, or search for users.`\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -240,
+        704
+      ],
+      "id": "d95ef029-7e3d-4381-9ac7-63d3cb4ee070",
+      "name": "Format Unknown Action"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const user = $input.item.json;\nconst params = $('Validate Input').item.json;\n\nif (!user || !user.username) {\n  return {\n    error: true,\n    message: `Sorry, I couldn't find a user with the username ${params.username}.`\n  };\n}\n\n// Helper function to convert a string to ASCII\nfunction toASCII(str) {\n  return str\n    .normalize('NFKD')\n    .replace(/[\\u0300-\\u036f]/g, '')\n    .replace(/[^\\x00-\\x7F]/g, '')\n    .trim();\n}\n\nconst username = user.username || user.screen_name || 'unknown';\nconst name = toASCII(user.name || 'Unknown');\nconst id = user.id || 'No ID available';\n\nreturn {\n  error: false,\n  message: `I found ${username}. Their display name is ${name}`,\n  user: {\n    name,\n    username,\n    id\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -240,
+        496
+      ],
+      "id": "7cc90417-ea6d-4dde-9ae5-3a885fc8c036",
+      "name": "Format Search Response"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const response = $input.item.json;\nconst params = $('Validate Input').item.json;\n\nif (!response || !response.dm_event_id) {\n  return {\n    error: true,\n    message: `Sorry, I couldn't send a direct message to ${params.username}. They may not accept DMs from you.`\n  };\n}\n\nconst dmText = params.text;\nconst previewText = dmText.length > 50 ? dmText.substring(0, 50) + '...' : dmText;\n\nreturn {\n  error: false,\n  message: `I've sent a direct message to ${params.username}: \"${previewText}\"`,\n  dm_id: response.dm_event_id,\n  recipient: params.username\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -240,
+        272
+      ],
+      "id": "523ec4c5-09ae-426f-a01a-531cde306481",
+      "name": "Format DM Response"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const response = $input.item.json;\nconst params = $('Validate Input').item.json;\n\nif (!response || !response.id) {\n  return {\n    error: true,\n    message: 'Sorry, I had trouble posting your tweet. Please try again.'\n  };\n}\n\nconst tweetText = params.text;\nconst previewText = tweetText.length > 50 ? tweetText.substring(0, 50) + '...' : tweetText;\n\nreturn {\n  error: false,\n  message: `I've posted your tweet: \"${previewText}\"`,\n  tweet_id: response.id,\n  tweet_text: tweetText\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -240,
+        -416
+      ],
+      "id": "fb6668fb-2912-421a-b881-0da156eb4047",
+      "name": "Format Tweet Response"
+    },
+    {
+      "parameters": {
+        "resource": "user",
+        "user": {
+          "__rl": true,
+          "value": "={{ $('Validate Input').item.json.username }}",
+          "mode": "username"
+        }
+      },
+      "type": "n8n-nodes-base.twitter",
+      "typeVersion": 2,
+      "position": [
+        -464,
+        160
+      ],
+      "id": "4599ff7c-0d49-4988-96fb-25b29fdb446a",
+      "name": "Get User",
+      "credentials": {
+        "twitterOAuth2Api": {
+          "id": null,
+          "name": "${TWITTEROAUTH2API_CREDENTIAL}"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "resource": "directMessage",
+        "user": {
+          "__rl": true,
+          "value": "={{ $('Validate Input').item.json.username }}",
+          "mode": "username"
+        },
+        "text": "={{ $('Validate Input').item.json.text }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.twitter",
+      "typeVersion": 2,
+      "position": [
+        -464,
+        -64
+      ],
+      "id": "6f065cba-6952-4cbd-9336-b89f87495694",
+      "name": "Send DM",
+      "credentials": {
+        "twitterOAuth2Api": {
+          "id": null,
+          "name": "${TWITTEROAUTH2API_CREDENTIAL}"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "text": "={{ $('Validate Input').item.json.text }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.twitter",
+      "typeVersion": 2,
+      "position": [
+        -464,
+        -368
+      ],
+      "id": "d7c104e2-fc26-405c-ac78-81b9127b32a7",
+      "name": "Post Tweet",
+      "credentials": {
+        "twitterOAuth2Api": {
+          "id": null,
+          "name": "${TWITTEROAUTH2API_CREDENTIAL}"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('Validate Input').item.json.action }}",
+                    "rightValue": "tweet",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "tweet-condition"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "tweet"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "dm-condition",
+                    "leftValue": "={{ $('Validate Input').item.json.action }}",
+                    "rightValue": "dm",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "dm"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "search-condition",
+                    "leftValue": "={{ $('Validate Input').item.json.action }}",
+                    "rightValue": "search",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "search"
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": "extra"
+        }
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        -912,
+        240
+      ],
+      "id": "0af08b6d-06f3-448a-a1e0-d46e2bebcbc7",
+      "name": "Action Switch"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "validation-error-check",
+              "leftValue": "={{ $json.error }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {
+          "ignoreCase": true
+        }
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -1136,
+        448
+      ],
+      "id": "35b76457-5a55-4563-b841-f46478e109d2",
+      "name": "Check Errors"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const body = $input.item.json.body || $input.item.json;\n\nconst action = (body.action || '').toLowerCase().trim();\nconst text = (body.text || '').toString().trim();\nconst username = body.username\n  ? body.username\n      .toString()\n      .replace(/\\s+/g, '')\n      .replace(/^@/, '')\n      .replace(/[^A-Za-z0-9_]/g, '')\n      .slice(0, 15)\n      .toLowerCase()\n  : '';\n\n// Validate action\nconst validActions = ['tweet', 'dm', 'search'];\nif (!action || !validActions.includes(action)) {\n  return {\n    error: true,\n    message: `Please specify a valid action: tweet, DM, or search. You said: ${action || 'nothing'}.`\n  };\n}\n\n// Validate required parameters for each action\nif (action === 'tweet' && !text) {\n  return {\n    error: true,\n    message: 'To post a tweet, I need some text to tweet.'\n  };\n}\n\nif (action === 'dm') {\n  if (!username) {\n    return {\n      error: true,\n      message: 'To send a direct message, I need a username.'\n    };\n  }\n  if (!text) {\n    return {\n      error: true,\n      message: `To send a direct message to ${username}, I need some text to send.`\n    };\n  }\n}\n\nreturn {\n  error: false,\n  action,\n  text,\n  username\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1360,
+        448
+      ],
+      "id": "3651e053-bdf6-4f8c-ac3a-d13a15f9ffec",
+      "name": "Validate Input"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "x-twitter",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -1584,
+        448
+      ],
+      "id": "b8b666f5-afbd-4b75-93d8-25b1363121e5",
+      "name": "Webhook",
+      "webhookId": "x-twitter-webhook-id",
+      "notes": "X (Twitter) tool for posting tweets, sending direct messages, and looking up display names. Actions: 'tweet' posts a tweet (requires text); 'dm' sends a direct message to a user (requires username and text); 'search' retrieves a user's display name from their username - provide a username to search for that user, or leave username empty to get your own display name. Parameters: action (required) - 'tweet', 'dm', or 'search'; text (required for tweet/dm) - the message content; username (required for dm, optional for search) - the X username/handle to look up, leave empty to get your own display name."
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "return {\n  error: true,\n  message: `You are out of credits. Add more credits to use the X API.`\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -240,
+        -112
+      ],
+      "id": "e7a6851a-fca6-4d3f-ba9e-39684fb85202",
+      "name": "Handle Out-of-Credits"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const params = $('Validate Input').item.json;\nconst message = $json.error?.message || JSON.stringify($json.error) || '';\n\nlet errorMessage;\nif (message.includes(\"Cannot read properties of undefined\") || message.includes(\"reading 'id'\")) {\n  errorMessage = `Sorry, I couldn't send a direct message to ${params.username}. The account might be suspended.`;\n} else if (message.toLowerCase().includes('forbidden')) {\n  errorMessage = `Sorry, I couldn't send the direct message. They may not accept messages from you.`;\n} else if (message.toLowerCase().includes('payment')) {\n  errorMessage = `You are out of credits. Add more credits to use the X API.`;\n} else if (message.toLowerCase().includes('Bad request')) {\n  errorMessage = `I couldn't fulfil that request. Please double check the parameters.`;\n}\n\nreturn {\n  error: true,\n  message: errorMessage\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -240,
+        80
+      ],
+      "id": "4ceb63b6-3a1a-4a8d-8e8f-368be2645021",
+      "name": "Handle DM Error"
+    },
+    {
+      "parameters": {
+        "content": "## CAAL Registry Tracking\n**Tool Name:** x-twitter\n**Description:** Post tweets, send direct messages, and search for X users. Requires X Developer account with credit balance for API usage.\n**version:** v1.0.0\n**id:** wn9K89sz3bAItFVWpvzkhQ\n**link:** [Registry](https://github.com/CoreWorxLab/caal-tools/tree/main/tools/social/x-twitter)\n\n### (Do not delete this sticky)",
+        "height": 260,
+        "width": 360
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -784,
+        -288
+      ],
+      "typeVersion": 1,
+      "id": "a874ab21-507c-45ab-8f5d-8ad87cb12953",
+      "name": "Sticky Note"
+    }
+  ],
+  "connections": {
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Get User",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get Self",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Self": {
+      "main": [
+        [
+          {
+            "node": "Format Search Response",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Handle Out-of-Credits",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Unknown Action": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Search Response": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format DM Response": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Tweet Response": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get User": {
+      "main": [
+        [
+          {
+            "node": "Format Search Response",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Handle Out-of-Credits",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send DM": {
+      "main": [
+        [
+          {
+            "node": "Format DM Response",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Handle DM Error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Post Tweet": {
+      "main": [
+        [
+          {
+            "node": "Format Tweet Response",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Handle Out-of-Credits",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Action Switch": {
+      "main": [
+        [
+          {
+            "node": "Post Tweet",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send DM",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Format Unknown Action",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Errors": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Action Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate Input": {
+      "main": [
+        [
+          {
+            "node": "Check Errors",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Validate Input",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Handle Out-of-Credits": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Handle DM Error": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "availableInMCP": true,
+    "callerPolicy": "workflowsFromSameOwner"
+  }
+}

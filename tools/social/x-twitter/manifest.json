@@ -1,0 +1,41 @@
+{
+  "id": "wn9K89sz3bAItFVWpvzkhQ",
+  "name": "x-twitter",
+  "friendlyName": "X (Twitter)",
+  "version": "1.0.0",
+  "description": "Post tweets, send direct messages, and search for X users. Requires X Developer account with credit balance for API usage.",
+  "category": "social",
+  "toolSuite": true,
+  "actions": [
+    "tweet",
+    "dm",
+    "search"
+  ],
+  "icon": "x.svg",
+  "voice_triggers": [
+    "Post a tweet saying hello world",
+    "Send a direct message to someone on Twitter"
+  ],
+  "required_services": [
+    "x (twitter)"
+  ],
+  "required_credentials": [
+    {
+      "credential_type": "twitterOAuth2Api",
+      "name": "TWITTEROAUTH2API_CREDENTIAL",
+      "description": "n8n credential type: twitterOAuth2Api"
+    }
+  ],
+  "required_variables": [],
+  "author": {
+    "github": "AbdulShahzeb"
+  },
+  "tier": "community",
+  "tags": [
+    "social",
+    "x (twitter)"
+  ],
+  "dependencies": [],
+  "created": "2026-02-02",
+  "updated": "2026-02-02"
+}
