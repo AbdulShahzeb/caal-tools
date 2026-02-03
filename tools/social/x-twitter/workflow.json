@@ -1199,33 +1199,6 @@
       "name": "Format Get Tweet"
     }
   ],
-  "pinData": {
-    "Webhook": [
-      {
-        "json": {
-          "headers": {
-            "host": "host.docker.internal:5678",
-            "accept": "*/*",
-            "accept-encoding": "gzip, deflate, br",
-            "user-agent": "Python/3.11 aiohttp/3.13.2",
-            "content-length": "58",
-            "content-type": "application/json"
-          },
-          "params": {},
-          "query": {},
-          "body": {
-            "action": "get_tweet",
-            "tweet_id": "2016933604513685836"
-          },
-          "webhookUrl": "http://localhost:5678/webhook/x-twitter",
-          "executionMode": "production"
-        },
-        "pairedItem": {
-          "item": 0
-        }
-      }
-    ]
-  },
   "connections": {
     "Format DM Response": {
       "main": [

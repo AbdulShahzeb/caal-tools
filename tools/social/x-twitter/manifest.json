@@ -45,14 +45,14 @@
       "credential_type": "twitterOAuth1Api",
       "name": "TWITTEROAUTH1API_CREDENTIAL",
       "description": "n8n credential type: twitterOAuth1Api"
-    },
-    {
-      "credential_type": "selfUserID",
-      "name": "SELF_USER_ID",
-      "description": "Your X User ID, can be found using third-party web services."
     }
   ],
-  "required_variables": [],
+  "required_variables": [
+    {
+      "name": "SELF_USER_ID",
+      "description": "Your X User ID, can be found using get_my_user or third-party web services."
+    }
+  ],
   "author": {
     "github": "AbdulShahzeb"
   },
