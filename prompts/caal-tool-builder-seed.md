@@ -162,7 +162,7 @@ Examples: 'NFL scores', 'how are the Packers doing', 'did the Chiefs win'
 
 **Good - Task suite (multi-action):**
 ```
-Google Tasks suite - manage tasks.
+Task management suite - Google Tasks integration.
 
 Parameters:
 - action (required): 'get', 'add', 'complete', or 'delete'
@@ -187,20 +187,20 @@ Example: for January 16th events, use start_date=2026-01-16, end_date=2026-01-17
 
 **Good - No parameters:**
 ```
-TrueNAS system status - CPU, memory, storage pools, and running apps. No parameters required.
+Server system status - TrueNAS integration for CPU, memory, storage pools, and running apps. No parameters required.
 
-Examples: 'TrueNAS status', 'how's my TrueNAS doing'
+Examples: 'TrueNAS status', 'how's my server doing'
 ```
 
 **Good - Complex params with valid values:**
 ```
-TrueNAS app control - start, stop, or restart applications.
+Server app control - TrueNAS integration for managing applications.
 
 Parameters:
 - app_name (required): app name like 'radarr' or 'jellyfin'
 - action (required): 'start', 'stop', or 'restart'
 
-Examples: 'restart Plex on TrueNAS', 'stop Jellyfin'
+Examples: 'restart Plex', 'stop Jellyfin on my server'
 ```
 
 **Bad - Too restrictive (hurts tool selection):**
@@ -493,7 +493,7 @@ Webhook (POST) → Parse Parameters (Code) → Switch on Action
 
 **Webhook Notes for Suites:**
 ```
-Google Tasks suite - manage tasks. Parameters: action (required) - 'get', 'add', 'complete', or 'delete'; title (required for add) - task name; task_id (required for complete/delete) - task ID; notes (optional for add); due (optional for add) - YYYY-MM-DD. Examples: 'what's on my task list', 'add task buy groceries', 'mark done the groceries task'.
+Task management suite - Google Tasks integration. Parameters: action (required) - 'get', 'add', 'complete', or 'delete'; title (required for add) - task name; task_id (required for complete/delete) - task ID; notes (optional for add); due (optional for add) - YYYY-MM-DD. Examples: 'what's on my task list', 'add task buy groceries', 'mark done the groceries task'.
 ```
 
 Note: Single-line format, semicolons between parameters, clear action values, examples show natural voice queries.
