@@ -10,10 +10,10 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.5,
       "position": [
-        448,
-        1776
+        1232,
+        1936
       ],
-      "id": "4ffa634d-4e3e-41e1-ab47-937b341c754f",
+      "id": "a9727b71-13fe-4684-9293-3b3ed5514dd2",
       "name": "Respond to Webhook"
     },
     {
@@ -24,24 +24,24 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        224,
-        1296
+        1008,
+        1552
       ],
-      "id": "b1bc1a57-c965-4e48-be31-3a24cb6a4f28",
+      "id": "9809778b-11e6-4ddb-9406-9d2e728211af",
       "name": "Format DM Response"
     },
     {
       "parameters": {
         "mode": "runOnceForEachItem",
-        "jsCode": "const response = $input.item.json;\n\nif (!response || !response.id) {\n  return {\n    error: true,\n    message: 'Sorry, I had trouble posting your tweet. Please try again.'\n  };\n}\n\nreturn {\n  error: false,\n  message: `Done. I've posted your tweet: \"${response.text}\"`,\n  tweet_id: response.id,\n  tweet_text: response.text\n};"
+        "jsCode": "const response = $input.item.json;\n\nif (!response || !response.id) {\n  return {\n    error: true,\n    message: 'Sorry, I had trouble posting your tweet. Please try again.'\n  };\n}\n\nreturn {\n  error: false,\n  message: `Done. I've posted your tweet: \"${response.text}\"`,\n  tweet_id: response.id,\n  text: response.text\n};"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        224,
-        1104
+        1008,
+        1360
       ],
-      "id": "9013b971-0acb-4a69-b95b-3b3768ceee6b",
+      "id": "b0d7345b-0e57-4c39-92a5-4bd09e24502c",
       "name": "Format Tweet Response"
     },
     {
@@ -58,10 +58,10 @@
       "type": "n8n-nodes-base.twitter",
       "typeVersion": 2,
       "position": [
-        0,
-        1344
+        784,
+        1600
       ],
-      "id": "f0af78b0-f72e-4045-b7b9-11bd967ffdce",
+      "id": "be448f92-1a6e-4ffc-88c0-8bca801beb61",
       "name": "Send DM",
       "credentials": {
         "twitterOAuth2Api": {
@@ -79,10 +79,10 @@
       "type": "n8n-nodes-base.twitter",
       "typeVersion": 2,
       "position": [
-        0,
-        1056
+        784,
+        1312
       ],
-      "id": "528e1268-3b53-4008-a286-c664a6de9150",
+      "id": "33eae1ed-f9b3-48e1-8e07-8a4b4adc242b",
       "name": "Post Tweet",
       "credentials": {
         "twitterOAuth2Api": {
@@ -122,24 +122,24 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.3,
       "position": [
-        -672,
-        2208
+        112,
+        2552
       ],
-      "id": "c6d39d5b-3e9f-41f0-8d77-372804e9f0c3",
+      "id": "ab531bcf-d1e8-46b5-a8de-76d2d950186e",
       "name": "Check Errors"
     },
     {
       "parameters": {
         "mode": "runOnceForEachItem",
-        "jsCode": "// Use a third-party web service like https://get-id-x.foundtt.com/en/ to find your X ID, or use the get_my_user action\n\nconst SELF_USER_ID = '${SELF_USER_ID}' // MUST be a string\n\n// Do not edit below this\n\nconst body = $input.item.json.body || $input.item.json;\n\nconst action   = (body.action || '').toLowerCase().trim();\nconst text     = (body.text || '').toString().trim();\nconst query    = (body.query || '').toString().trim();\nconst tweet_id = (body.tweet_id || '').toString().trim();\nconst id       = (body.id || '').toString().trim();\nconst username = body.username\n  ? body.username.toString().replace(/\\s+/g, '').replace(/^@/, '').replace(/[^A-Za-z0-9_]/g, '').slice(0, 15)\n  : '';\n\n// --- action \u2192 category map ---\nconst categoryMap = {\n  get_tweet:             'tweet_action',\n  post_tweet:            'tweet_action',\n  like_tweet:            'tweet_action',\n  unlike_tweet:          'tweet_action',\n  retweet_tweet:         'tweet_action',\n  unretweet_tweet:       'tweet_action',\n  delete_tweet:          'tweet_action',\n  dm_user:               'user_action',\n  mute_user:             'user_action',\n  unmute_user:           'user_action',\n  get_user_by_query:     'get_user',\n  get_user_by_username:  'get_user',\n  get_my_user:           'get_user',\n  get_blocked_users:     'get_user',\n};\n\nif (!action || !categoryMap[action]) {\n  return {\n    error: true,\n    message: `Sorry, I can't handle \"${action || 'none'}\" action requests yet.`\n  };\n}\n\nconst category = categoryMap[action];\n\n// --- required field check per action ---\nconst fieldRules = {\n  get_tweet:             () => !tweet_id && 'tweet_id',\n  post_tweet:            () => !text     && 'text',\n  like_tweet:            () => !tweet_id && 'tweet_id',\n  unlike_tweet:          () => !tweet_id && 'tweet_id',\n  retweet_tweet:         () => !tweet_id && 'tweet_id',\n  unretweet_tweet:       () => !tweet_id && 'tweet_id',\n  delete_tweet:          () => !tweet_id && 'tweet_id',\n  dm_user:               () => !username ? 'username' : !text ? 'text' : null,\n  mute_user:             () => !id      && 'id',\n  unmute_user:           () => !id      && 'id',\n  get_user_by_query:     () => !query    && 'query',\n  get_user_by_username:  () => !username && 'username',\n  get_my_user:           () => null,\n  get_blocked_users:     () => null,\n};\n\nconst missingField = fieldRules[action]();\nif (missingField) {\n  return {\n    error: true,\n    message: `The \"${action}\" action requires \"${missingField}\".`\n  };\n}\n\nconst numericFields = { id, self_user_id: SELF_USER_ID, tweet_id };\nfor (const [key, value] of Object.entries(numericFields)) {\n  if (value && !/^\\d+$/.test(value)) {\n    return {\n      error: true,\n      message: `The field \"${key}\" must contain only numeric characters.`\n    };\n  }\n}\n\nreturn {\n  error: false,\n  action,\n  category,\n  text,\n  query,\n  username,\n  id,\n  tweet_id,\n  self_user_id: SELF_USER_ID\n};"
+        "jsCode": "// Use a third-party web service like https://get-id-x.foundtt.com/en/ to find your X ID, or use the get_my_user action\n\nconst SELF_USER_ID = '${SELF_USER_ID}' // MUST be a string\n\n// Do not edit below this\n\nconst body = $input.item.json.body || $input.item.json;\n\nconst action   = (body.action || '').toLowerCase().trim();\nconst text     = (body.text || '').toString().trim();\nconst query    = (body.query || '').toString().trim();\nconst tweet_id = (body.tweet_id || '').toString().trim();\nconst id       = (body.id || '').toString().trim();\nconst username = body.username\n  ? body.username.toString().replace(/\\s+/g, '').replace(/^@/, '').replace(/[^A-Za-z0-9_]/g, '').slice(0, 15)\n  : '';\n\n// --- action → category map ---\nconst categoryMap = {\n  get_tweet:             'tweet_action',\n  post_tweet:            'tweet_action',\n  like_tweet:            'tweet_action',\n  unlike_tweet:          'tweet_action',\n  retweet_tweet:         'tweet_action',\n  unretweet_tweet:       'tweet_action',\n  delete_tweet:          'tweet_action',\n  dm_user:               'user_action',\n  mute_user:             'user_action',\n  unmute_user:           'user_action',\n  get_user_by_query:     'get_user',\n  get_user_by_username:  'get_user',\n  get_my_user:           'get_user',\n  get_blocked_users:     'get_user',\n};\n\nif (!action || !categoryMap[action]) {\n  return {\n    error: true,\n    message: `Sorry, I can't handle \"${action || 'none'}\" action requests yet.`\n  };\n}\n\nconst category = categoryMap[action];\n\n// --- required field check per action ---\nconst fieldRules = {\n  get_tweet:             () => !tweet_id && 'tweet_id',\n  post_tweet:            () => !text     && 'text',\n  like_tweet:            () => !tweet_id && 'tweet_id',\n  unlike_tweet:          () => !tweet_id && 'tweet_id',\n  retweet_tweet:         () => !tweet_id && 'tweet_id',\n  unretweet_tweet:       () => !tweet_id && 'tweet_id',\n  delete_tweet:          () => !tweet_id && 'tweet_id',\n  dm_user:               () => !username ? 'username' : !text ? 'text' : null,\n  mute_user:             () => !id      && 'id',\n  unmute_user:           () => !id      && 'id',\n  get_user_by_query:     () => !query    && 'query',\n  get_user_by_username:  () => !username && 'username',\n  get_my_user:           () => null,\n  get_blocked_users:     () => null,\n};\n\nconst missingField = fieldRules[action]();\nif (missingField) {\n  return {\n    error: true,\n    message: `The \"${action}\" action requires \"${missingField}\".`\n  };\n}\n\nconst numericFields = { id, self_user_id: SELF_USER_ID, tweet_id };\nfor (const [key, value] of Object.entries(numericFields)) {\n  if (value && !/^\\d+$/.test(value)) {\n    return {\n      error: true,\n      message: `The field \"${key}\" must contain only numeric characters.`\n    };\n  }\n}\n\nreturn {\n  error: false,\n  action,\n  category,\n  text,\n  query,\n  username,\n  id,\n  tweet_id,\n  self_user_id: SELF_USER_ID\n};"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -896,
-        2208
+        -112,
+        2552
       ],
-      "id": "c50a4045-0746-4ca1-a74e-484c58190cf7",
+      "id": "45d65646-7bfa-4b84-9d8d-149b97a43d1b",
       "name": "Validate Input"
     },
     {
@@ -152,13 +152,13 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        -1120,
-        2208
+        -336,
+        2552
       ],
-      "id": "472d6585-1358-43cb-b696-b4f40d56a5c1",
+      "id": "dd5ae84b-649f-4de0-926a-212ab3ddf322",
       "name": "Webhook",
       "webhookId": "x-twitter-webhook-id",
-      "notes": "X (Twitter) automation tool.\n\nREQUIRED (always include):\n  action (string) \u2014 must be exactly one of the values listed below. Do not invent other values.\n\n--- TWEET INTERACTIONS ---\n\n  action: \"get_tweet\"\n    tweet_id (string, required) \u2014 the ID of the tweet to retrieve.\n    \n    Returns: tweet text, creation date, and full engagement metrics (views, likes, retweets, quote tweets, replies, bookmarks)\n    \n    WHEN TO USE: When asked about a specific tweet's content, performance, or engagement stats. Examples: \"How many likes does tweet X have?\", \"What does tweet Y say?\", \"How many views on tweet Z?\"\n\n  action: \"post_tweet\"\n    text (string, required) \u2014 the tweet content.\n\n  action: \"like_tweet\"\n    tweet_id (string, required) \u2014 the ID of the tweet to like.\n\n  action: \"unlike_tweet\"\n    tweet_id (string, required) \u2014 the ID of the tweet to unlike.\n\n  action: \"retweet_tweet\"\n    tweet_id (string, required) \u2014 the ID of the tweet to retweet.\n\n  action: \"unretweet_tweet\"\n    tweet_id (string, required) \u2014 the ID of the tweet to undo a retweet on.\n\n  action: \"delete_tweet\"\n    tweet_id (string, required) \u2014 the ID of the tweet to delete. Can only delete your own tweets.\n\n--- USER ACTIONS ---\n\n  action: \"dm_user\"\n    username (string, required) \u2014 the recipient's X username/handle without the '@' symbol.\n    text (string, required) \u2014 the DM content.\n\n  action: \"mute_user\"\n    id (string, required) \u2014 the numeric user ID to mute.\n\n  action: \"unmute_user\"\n    id (string, required) \u2014 the numeric user ID to unmute.\n\n--- USER LOOKUP ---\n\nThese actions retrieve full user profile data. Use them when asked about:\n  - follower counts, following counts, tweet counts (public_metrics)\n  - whether someone is verified\n  - account creation date\n  - bio/description, location\n  - connection status (are they following you? are you following them? blocking? muting?)\n  - whether they accept your DMs\n  - pinned tweet ID, most recent tweet ID\n\n  action: \"get_user_by_query\"\n    query (string, required) \u2014 a free-text search string (e.g. \"elon musk\"). Returns the top matching user profile with all metrics.\n    \n    WHEN TO USE: When the user asks questions like \"how many followers does X have?\", \"is Y verified?\", \"when did Z join Twitter?\", or provides a name/description rather than an exact username.\n\n  action: \"get_user_by_username\"\n    username (string, required) \u2014 the exact X username/handle, without the @ symbol. Returns full profile with all metrics.\n    \n    WHEN TO USE: When you already know the exact username/handle.\n\n  action: \"get_my_user\"\n    (no other fields needed) \u2014 returns the authenticated user's own profile with all metrics.\n    \n    WHEN TO USE: When asked \"how many followers do I have?\", \"what's my bio?\", etc.\n\n  action: \"get_blocked_users\"\n    (no other fields needed) \u2014 returns a list of all accounts the user has blocked, including their names and usernames.\n\n\nRULES:\n  - All IDs are strings. Always wrap them in quotes, never send as numbers.\n  - \"id\" is always a numeric user ID. Never a username, never a handle.\n  - \"tweet_id\" is always a numeric tweet ID. Never a URL, never tweet text.\n  - \"username\" must not include the @ symbol.\n  - Only include fields that are listed for the action you chose. Do not send extra fields.\n  - If you do not have a required ID or tweet_id, do NOT guess or fabricate one. Use get_user_by_query or get_user_by_username first to retrieve it, then use the returned ID in a follow-up request.\n  \nEXAMPLES:\n  Q: \"How many followers does Elon Musk have?\"\n  \u2192 Use get_user_by_query with query: \"elon musk\"\n  \n  Q: \"Can I DM @sama?\"\n  \u2192 Use get_user_by_username with username: \"sama\"\n  \n  Q: \"Mute @spambot123 on X\"\n  \u2192 First use get_user_by_username with username: \"spambot123\" to get their ID, then use mute_user with that ID\n  \n  Q: \"What's my follower count?\"\n  \u2192 Use get_my_user\n  \n  Q: \"Does Satya Nadella follow me?\"\n  \u2192 Use get_user_by_query with query: \"satya nadella\"\n  \n  Q: \"How many likes does tweet 1234567890 have?\"\n  \u2192 Use get_tweet with tweet_id: \"1234567890\"\n  \n  Q: \"What does my most recent tweet say?\"\n  \u2192 First use get_my_user to get your most_recent_tweet_id, then use get_tweet with that ID"
+      "notes": "X (Twitter) automation tool.\n\nREQUIRED (always include):\n  action (string) \u2014 must be exactly one of the values listed below. Do not invent other values.\n\n--- TWEET INTERACTIONS ---\n\n  action: \"get_tweet\"\n    tweet_id (string, required) \u2014 the ID of the tweet to retrieve.\n    \n    Returns: tweet text, creation date, and full engagement metrics (views, likes, retweets, quote tweets, replies, bookmarks)\n    \n    WHEN TO USE: When asked about a specific tweet's content, performance, or engagement stats. Examples: \"How many likes does tweet X have?\", \"What does tweet Y say?\", \"How many views on tweet Z?\"\n\n  action: \"post_tweet\"\n    text (string, required) \u2014 the tweet content.\n\n  action: \"like_tweet\"\n    tweet_id (string, required) \u2014 the ID of the tweet to like.\n\n  action: \"unlike_tweet\"\n    tweet_id (string, required) \u2014 the ID of the tweet to unlike.\n\n  action: \"retweet_tweet\"\n    tweet_id (string, required) \u2014 the ID of the tweet to retweet.\n\n  action: \"unretweet_tweet\"\n    tweet_id (string, required) \u2014 the ID of the tweet to undo a retweet on.\n\n  action: \"delete_tweet\"\n    tweet_id (string, required) \u2014 the ID of the tweet to delete. Can only delete your own tweets.\n\n--- USER ACTIONS ---\n\n  action: \"dm_user\"\n    username (string, required) \u2014 the recipient's X username/handle without the '@' symbol.\n    text (string, required) \u2014 the DM content.\n\n  action: \"mute_user\"\n    id (string, required) \u2014 the numeric user ID to mute.\n\n  action: \"unmute_user\"\n    id (string, required) \u2014 the numeric user ID to unmute.\n\n--- USER LOOKUP ---\n\nThese actions retrieve full user profile data. Use them when asked about:\n  - follower counts, following counts, tweet counts (public_metrics)\n  - whether someone is verified\n  - account creation date\n  - bio/description, location\n  - connection status (are they following you? are you following them? blocking? muting?)\n  - whether they accept your DMs\n  - pinned tweet ID, most recent tweet ID\n\n  action: \"get_user_by_query\"\n    query (string, required) \u2014 a free-text search string (e.g. \"elon musk\"). Returns the top matching user profile with all metrics.\n    \n    WHEN TO USE: When the user asks questions like \"how many followers does X have?\", \"is Y verified?\", \"when did Z join Twitter?\", or provides a name/description rather than an exact username.\n\n  action: \"get_user_by_username\"\n    username (string, required) \u2014 the exact X username/handle, without the @ symbol. Returns full profile with all metrics.\n    \n    WHEN TO USE: When you already know the exact username/handle.\n\n  action: \"get_my_user\"\n    (no other fields needed) \u2014 returns the authenticated user's own profile with all metrics.\n    \n    WHEN TO USE: When asked \"how many followers do I have?\", \"what's my bio?\", etc.\n\n  action: \"get_blocked_users\"\n    (no other fields needed) \u2014 returns a list of all accounts the user has blocked, including their names and usernames.\n\n\nRULES:\n  - All IDs are strings. Always wrap them in quotes, never send as numbers.\n  - \"id\" is always a numeric user ID. Never a username, never a handle.\n  - \"tweet_id\" is always a numeric tweet ID. Never a URL, never tweet text.\n  - \"username\" must not include the @ symbol.\n  - Only include fields that are listed for the action you chose. Do not send extra fields.\n  - If you do not have a required ID or tweet_id, do NOT guess or fabricate one. Use get_user_by_query or get_user_by_username first to retrieve it, then use the returned ID in a follow-up request.\n  \nEXAMPLES:\n  Q: \"How many followers does Elon Musk have?\"\n  → Use get_user_by_query with query: \"elon musk\"\n  \n  Q: \"Can I DM @sama?\"\n  → Use get_user_by_username with username: \"sama\"\n  \n  Q: \"Mute @spambot123 on X\"\n  → First use get_user_by_username with username: \"spambot123\" to get their ID, then use mute_user with that ID\n  \n  Q: \"What's my follower count?\"\n  → Use get_my_user\n  \n  Q: \"Does Satya Nadella follow me?\"\n  → Use get_user_by_query with query: \"satya nadella\"\n  \n  Q: \"How many likes does tweet 1234567890 have?\"\n  → Use get_tweet with tweet_id: \"1234567890\"\n  \n  Q: \"What does my most recent tweet say?\"\n  → First use get_my_user to get your most_recent_tweet_id, then use get_tweet with that ID\n\n  Q: \"DM @Fortnite saying hello world\"\n  → Use dm_user with username: \"Fortnite\" and text: \"hello world\""
     },
     {
       "parameters": {
@@ -246,10 +246,10 @@
       "type": "n8n-nodes-base.switch",
       "typeVersion": 3.4,
       "position": [
-        -448,
-        1488
+        336,
+        1840
       ],
-      "id": "afd5b9fa-efed-42e6-9caa-2e053e816685",
+      "id": "eae72a59-7bde-496c-af8f-165d5ec5304f",
       "name": "Category Switch"
     },
     {
@@ -339,10 +339,10 @@
       "type": "n8n-nodes-base.switch",
       "typeVersion": 3.4,
       "position": [
-        -224,
-        1488
+        560,
+        1840
       ],
-      "id": "43c40f2d-e85e-4429-a6db-450b41c857e3",
+      "id": "12a17170-c3aa-4044-8881-b065b2b61dec",
       "name": "User Action Switch"
     },
     {
@@ -455,10 +455,10 @@
       "type": "n8n-nodes-base.switch",
       "typeVersion": 3.4,
       "position": [
-        -224,
-        2336
+        560,
+        2688
       ],
-      "id": "4209ad0f-3dfa-447b-869f-4eaace89de72",
+      "id": "daa02c39-3723-47ca-b409-304447a29e26",
       "name": "Get User Switch"
     },
     {
@@ -496,10 +496,10 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.3,
       "position": [
-        0,
-        1584
+        784,
+        1840
       ],
-      "id": "564e09b1-f5cf-495d-80ea-66abacde46c7",
+      "id": "bb12205e-2f3f-4c6c-9e23-433d5e9b81b7",
       "name": "Mute User",
       "credentials": {
         "twitterOAuth1Api": {
@@ -525,10 +525,10 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.3,
       "position": [
-        0,
-        2656
+        784,
+        2912
       ],
-      "id": "52c01112-25ce-4187-b831-e0cbad2586fe",
+      "id": "7c7ffd3c-168c-409d-9303-ae0015573b80",
       "name": "Get Blocked Users",
       "credentials": {
         "twitterOAuth1Api": {
@@ -554,10 +554,10 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.3,
       "position": [
-        0,
-        1824
+        784,
+        2128
       ],
-      "id": "b34dee51-0cc1-4557-8c6f-db4854647aff",
+      "id": "433051eb-d4e5-4fa5-9ad0-924faf522b2c",
       "name": "Unmute User",
       "credentials": {
         "twitterOAuth1Api": {
@@ -570,29 +570,29 @@
     {
       "parameters": {
         "mode": "runOnceForEachItem",
-        "jsCode": "if (!$json.data.muting) {\n  return {\n    error: true,\n    message: 'Sorry, I could not mute the user.',\n    muting: $json.data.muting\n  };\n}\n\nreturn {\n  error: false,\n  message: 'Okay, I have muted the user for you.',\n  muting: $json.data.muting\n}"
+        "jsCode": "if (!$json.data.muting) {\n  return {\n    error: true,\n    message: 'Sorry, I could not mute the user.',\n    muting: $json.data.muting\n  };\n}\n\nreturn {\n  error: false,\n  message: 'Okay, I have muted the user for you.',\n  muting: $json.data.muting,\n  id: $('Validate Input').item.json.id\n}"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        224,
-        1696
+        1008,
+        1952
       ],
-      "id": "8718aa2d-f26a-45a1-804b-956529dfa80f",
+      "id": "edd61756-54c6-4d0b-ad5e-b6ce44e3cf4f",
       "name": "Format Mute Response"
     },
     {
       "parameters": {
         "mode": "runOnceForEachItem",
-        "jsCode": "if ($json.data.muting) {\n  return {\n    error: true,\n    message: 'Sorry, I could not unmute the user.',\n    muting: $json.data.muting\n  }\n}\n\nreturn {\n  error: false,\n  message: 'Okay, I have unmuted the user for you.',\n  muting: $json.data.muting\n}"
+        "jsCode": "if ($json.data.muting) {\n  return {\n    error: true,\n    message: 'Sorry, I could not unmute the user.',\n    muting: $json.data.muting\n  }\n}\n\nreturn {\n  error: false,\n  message: 'Okay, I have unmuted the user for you.',\n  muting: $json.data.muting,\n  id: $('Validate Input').item.json.id\n}"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        224,
-        1888
+        1008,
+        2144
       ],
-      "id": "41e1ea08-d2a2-47ec-96ba-b02179098e52",
+      "id": "aca08d8f-7858-4193-865e-b9a927905c33",
       "name": "Format Unmute Response"
     },
     {
@@ -603,10 +603,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        224,
-        2656
+        1008,
+        2912
       ],
-      "id": "f891f7b9-53be-400b-9165-3ebe303783cd",
+      "id": "f0ecd56e-c7e5-40f5-a73f-dade53e3e25e",
       "name": "Format Blocked Users"
     },
     {
@@ -642,10 +642,10 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.3,
       "position": [
-        0,
-        2080
+        784,
+        2336
       ],
-      "id": "90ff43e9-d7f7-4a8b-8132-9e8053407161",
+      "id": "02604f86-266f-42b9-a0f4-27f84644c319",
       "name": "Get User by Query",
       "credentials": {
         "twitterOAuth1Api": {
@@ -657,15 +657,15 @@
     {
       "parameters": {
         "mode": "runOnceForEachItem",
-        "jsCode": "const data = $input.item.json.data;\n\nif (!Array.isArray(data) || data.length === 0) {\n  return {\n    error: true,\n    message: \"Sorry, I couldn't find any users matching that request.\"\n  };\n}\n\nconst response = data[0];\nconst createdAt = new Date(response.created_at);\n\n// Format like: \"2 June 2009\"\nconst createdDate = createdAt.toLocaleDateString('en-GB', {\n  day: 'numeric',\n  month: 'long',\n  year: 'numeric'\n});\n\nlet message = `I found a user called ${response.name} with username ${response.username}. The account was created on ${createdDate}.`;\n\n// Can you DM them?\nif (response.receives_your_dm) {\n  message += \" You can DM them.\"\n} else {\n  message += \" You cannot DM them.\"\n}\n\n// Your connection status with the user\nconst connection = response.connection_status || [];\nconst statusMessages = [];\n\n// follow/followed info is always reported\nif (connection.includes(\"followed_by\")) {\n  statusMessages.push(\"This user is following you.\");\n} else {\n  statusMessages.push(\"This user is not following you.\");\n}\n\nif (connection.includes(\"following\")) {\n  statusMessages.push(\"You are following this user.\");\n} else {\n  statusMessages.push(\"You are not following this user.\");\n}\n\n// other statuses only if present\nif (connection.includes(\"follow_request_received\")) statusMessages.push(\"You have received a follow request from this user.\");\nif (connection.includes(\"follow_request_sent\")) statusMessages.push(\"You have sent a follow request to this user.\");\nif (connection.includes(\"blocking\")) statusMessages.push(\"You are blocking this user.\");\nif (connection.includes(\"muting\")) statusMessages.push(\"You have muted this user.\");\n\n// Append to message\nif (statusMessages.length > 0) {\n  message += \" \" + statusMessages.join(\" \");\n}\n\n// Metrics\nconst metrics = response.public_metrics;\n\nfunction formatCount(n) {\n  if (n >= 1_000_000_000) return `${Math.round(n / 1_000_000_000)} billion`;\n  if (n >= 1_000_000) return `${Math.round(n / 1_000_000)} million`;\n  if (n >= 1_000) return `${Math.round(n / 1_000)} thousand`;\n  return `${Math.round(n)}`;\n}\n\nconst followers = formatCount(metrics.followers_count);\nconst following = formatCount(metrics.following_count);\nconst tweets = formatCount(metrics.tweet_count);\n\nmessage += ` They have about ${followers} followers, ${following} following, and have posted roughly ${tweets} tweets.`;\n\nconst pinned_tweet_id = response.pinned_tweet_id || ''\nconst most_recent_tweet_id = response.most_recent_tweet_id || ''\n\nreturn {\n  error: false,\n  message,\n  id: response.id,\n  created_date: createdDate,\n  can_receive_your_dm: response.receives_your_dm,\n  bio: response.description,\n  connection,\n  metrics: response.public_metrics,\n  pinned_tweet_id,\n  most_recent_tweet_id\n};"
+        "jsCode": "const data = $input.item.json.data;\n\nif (!Array.isArray(data) || data.length === 0) {\n  return {\n    error: true,\n    message: \"Sorry, I couldn't find any users matching that request.\"\n  };\n}\n\nconst response = data[0];\nconst createdAt = new Date(response.created_at);\n\n// Format like: \"2 June 2009\"\nconst createdDate = createdAt.toLocaleDateString('en-GB', {\n  day: 'numeric',\n  month: 'long',\n  year: 'numeric'\n});\n\nlet message = `I found a user called ${response.name} with username ${response.username}. The account was created on ${createdDate}.`;\n\n// Can you DM them?\nif (response.receives_your_dm) {\n  message += \" You can DM them.\"\n} else {\n  message += \" You cannot DM them.\"\n}\n\n// Your connection status with the user\nconst connection = response.connection_status || [];\nconst statusMessages = [];\n\n// follow/followed info is always reported\nif (connection.includes(\"followed_by\")) {\n  statusMessages.push(\"This user is following you.\");\n} else {\n  statusMessages.push(\"This user is not following you.\");\n}\n\nif (connection.includes(\"following\")) {\n  statusMessages.push(\"You are following this user.\");\n} else {\n  statusMessages.push(\"You are not following this user.\");\n}\n\n// other statuses only if present\nif (connection.includes(\"follow_request_received\")) statusMessages.push(\"You have received a follow request from this user.\");\nif (connection.includes(\"follow_request_sent\")) statusMessages.push(\"You have sent a follow request to this user.\");\nif (connection.includes(\"blocking\")) statusMessages.push(\"You are blocking this user.\");\nif (connection.includes(\"muting\")) statusMessages.push(\"You have muted this user.\");\n\n// Append to message\nif (statusMessages.length > 0) {\n  message += \" \" + statusMessages.join(\" \");\n}\n\n// Metrics\nconst metrics = response.public_metrics;\n\nfunction formatCount(n) {\n  if (n >= 1_000_000_000) return `${Math.round(n / 1_000_000_000)} billion`;\n  if (n >= 1_000_000) return `${Math.round(n / 1_000_000)} million`;\n  if (n >= 1_000) return `${Math.round(n / 1_000)} thousand`;\n  return `${Math.round(n)}`;\n}\n\nconst followers = formatCount(metrics.followers_count);\nconst following = formatCount(metrics.following_count);\nconst tweets = formatCount(metrics.tweet_count);\n\nmessage += ` They have about ${followers} followers, ${following} following, and have posted roughly ${tweets} tweets.`;\n\nconst pinned_tweet_id = response.pinned_tweet_id || '';\nconst most_recent_tweet_id = response.most_recent_tweet_id || '';\n\n// Prepare voice-friendly additions\nconst pinnedExists = Boolean(pinned_tweet_id);\nconst recentExists = Boolean(most_recent_tweet_id);\n\nif (pinnedExists && recentExists) {\n  message += \" I have retrieved both their pinned tweet and their most recent tweet.\";\n} else if (pinnedExists) {\n  message += \" I have retrieved their pinned tweet.\";\n} else if (recentExists) {\n  message += \" I have retrieved their most recent tweet.\";\n}\n\nreturn {\n  error: false,\n  message,\n  id: response.id,\n  name: response.name,\n  username: response.username,\n  created_date: createdDate,\n  can_receive_your_dm: response.receives_your_dm,\n  bio: response.description,\n  connection,\n  metrics: response.public_metrics,\n  pinned_tweet_id,\n  most_recent_tweet_id\n};"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        224,
-        2080
+        1008,
+        2336
       ],
-      "id": "f6ab874d-75a7-4aa4-9f2e-603f15752d1f",
+      "id": "bf7f8548-79b5-4c88-81c4-2308155fe378",
       "name": "Format Get User by Query"
     },
     {
@@ -693,10 +693,10 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.3,
       "position": [
-        0,
-        2272
+        784,
+        2528
       ],
-      "id": "e9c99e39-6d8d-44e1-909e-693a8fa51295",
+      "id": "57d16144-bd82-45bc-a053-fdb84f4044c4",
       "name": "Get User by Username",
       "credentials": {
         "twitterOAuth1Api": {
@@ -708,15 +708,15 @@
     {
       "parameters": {
         "mode": "runOnceForEachItem",
-        "jsCode": "// Check for errors first\nconst errors = $input.item.json.errors || [];\n\nif (errors.length > 0) {\n  const err = errors[0];\n  const username = err.value || \"unknown\";\n  const detail = err.detail || \"An error occurred.\";\n\n  return {\n    error: true,\n    message: `I couldn't find a user with the username ${username}.`,\n    detail\n  };\n}\n\nconst response = $input.item.json.data;\nconst createdAt = new Date(response.created_at);\n\n// Format like: \"2 June 2009\"\nconst createdDate = createdAt.toLocaleDateString('en-GB', {\n  day: 'numeric',\n  month: 'long',\n  year: 'numeric'\n});\n\nlet message = `${response.username}'s display name is ${response.name}'. The account was created on ${createdDate}.`;\n\n// Can you DM them?\nif (response.receives_your_dm) {\n  message += \" You can DM them.\"\n} else {\n  message += \" You cannot DM them.\"\n}\n\n// Your connection status with the user\nconst connection = response.connection_status || [];\nconst statusMessages = [];\n\n// follow/followed info is always reported\nif (connection.includes(\"followed_by\")) {\n  statusMessages.push(\"This user is following you.\");\n} else {\n  statusMessages.push(\"This user is not following you.\");\n}\n\nif (connection.includes(\"following\")) {\n  statusMessages.push(\"You are following this user.\");\n} else {\n  statusMessages.push(\"You are not following this user.\");\n}\n\n// other statuses only if present\nif (connection.includes(\"follow_request_received\")) statusMessages.push(\"You have received a follow request from this user.\");\nif (connection.includes(\"follow_request_sent\")) statusMessages.push(\"You have sent a follow request to this user.\");\nif (connection.includes(\"blocking\")) statusMessages.push(\"You are blocking this user.\");\nif (connection.includes(\"muting\")) statusMessages.push(\"You have muted this user.\");\n\n// Append to message\nif (statusMessages.length > 0) {\n  message += \" \" + statusMessages.join(\" \");\n}\n\n// Metrics\nconst metrics = response.public_metrics;\n\nfunction formatCount(n) {\n  if (n >= 1_000_000_000) return `${Math.round(n / 1_000_000_000)} billion`;\n  if (n >= 1_000_000) return `${Math.round(n / 1_000_000)} million`;\n  if (n >= 1_000) return `${Math.round(n / 1_000)} thousand`;\n  return `${Math.round(n)}`;\n}\n\nconst followers = formatCount(metrics.followers_count);\nconst following = formatCount(metrics.following_count);\nconst tweets = formatCount(metrics.tweet_count);\n\nmessage += ` They have about ${followers} followers, ${following} following, and have posted roughly ${tweets} tweets.`;\n\nconst pinned_tweet_id = response.pinned_tweet_id || ''\nconst most_recent_tweet_id = response.most_recent_tweet_id || ''\n\nreturn {\n  error: false,\n  message,\n  id: response.id,\n  created_date: createdDate,\n  can_receive_your_dm: response.receives_your_dm,\n  bio: response.description,\n  connection,\n  metrics: response.public_metrics,\n  pinned_tweet_id,\n  most_recent_tweet_id\n};"
+        "jsCode": "// Check for errors first\nconst errors = $input.item.json.errors || [];\n\nif (errors.length > 0) {\n  const err = errors[0];\n  const username = err.value || \"unknown\";\n  const detail = err.detail || \"An error occurred.\";\n\n  return {\n    error: true,\n    message: `I couldn't find a user with the username ${username}.`,\n    detail\n  };\n}\n\nconst response = $input.item.json.data;\nconst createdAt = new Date(response.created_at);\n\n// Format like: \"2 June 2009\"\nconst createdDate = createdAt.toLocaleDateString('en-GB', {\n  day: 'numeric',\n  month: 'long',\n  year: 'numeric'\n});\n\nlet message = `${response.username}'s display name is ${response.name}'. The account was created on ${createdDate}.`;\n\n// Can you DM them?\nif (response.receives_your_dm) {\n  message += \" You can DM them.\"\n} else {\n  message += \" You cannot DM them.\"\n}\n\n// Your connection status with the user\nconst connection = response.connection_status || [];\nconst statusMessages = [];\n\n// follow/followed info is always reported\nif (connection.includes(\"followed_by\")) {\n  statusMessages.push(\"This user is following you.\");\n} else {\n  statusMessages.push(\"This user is not following you.\");\n}\n\nif (connection.includes(\"following\")) {\n  statusMessages.push(\"You are following this user.\");\n} else {\n  statusMessages.push(\"You are not following this user.\");\n}\n\n// other statuses only if present\nif (connection.includes(\"follow_request_received\")) statusMessages.push(\"You have received a follow request from this user.\");\nif (connection.includes(\"follow_request_sent\")) statusMessages.push(\"You have sent a follow request to this user.\");\nif (connection.includes(\"blocking\")) statusMessages.push(\"You are blocking this user.\");\nif (connection.includes(\"muting\")) statusMessages.push(\"You have muted this user.\");\n\n// Append to message\nif (statusMessages.length > 0) {\n  message += \" \" + statusMessages.join(\" \");\n}\n\n// Metrics\nconst metrics = response.public_metrics;\n\nfunction formatCount(n) {\n  if (n >= 1_000_000_000) return `${Math.round(n / 1_000_000_000)} billion`;\n  if (n >= 1_000_000) return `${Math.round(n / 1_000_000)} million`;\n  if (n >= 1_000) return `${Math.round(n / 1_000)} thousand`;\n  return `${Math.round(n)}`;\n}\n\nconst followers = formatCount(metrics.followers_count);\nconst following = formatCount(metrics.following_count);\nconst tweets = formatCount(metrics.tweet_count);\n\nmessage += ` They have about ${followers} followers, ${following} following, and have posted roughly ${tweets} tweets.`;\n\nconst pinned_tweet_id = response.pinned_tweet_id || '';\nconst most_recent_tweet_id = response.most_recent_tweet_id || '';\n\n// Prepare voice-friendly additions\nconst pinnedExists = Boolean(pinned_tweet_id);\nconst recentExists = Boolean(most_recent_tweet_id);\n\nif (pinnedExists && recentExists) {\n  message += \" I have retrieved both their pinned tweet and their most recent tweet.\";\n} else if (pinnedExists) {\n  message += \" I have retrieved their pinned tweet.\";\n} else if (recentExists) {\n  message += \" I have retrieved their most recent tweet.\";\n}\n\nreturn {\n  error: false,\n  message,\n  id: response.id,\n  name: response.name,\n  username: response.username,\n  created_date: createdDate,\n  can_receive_your_dm: response.receives_your_dm,\n  bio: response.description,\n  connection,\n  metrics: response.public_metrics,\n  pinned_tweet_id,\n  most_recent_tweet_id\n};"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        224,
-        2272
+        1008,
+        2528
       ],
-      "id": "372f105b-e5fd-482a-91de-6b4707fd9ab6",
+      "id": "64d3b87e-b9f3-497b-9a41-48d58da61ef2",
       "name": "Format Get User by Username"
     },
     {
@@ -744,10 +744,10 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.3,
       "position": [
-        0,
-        2464
+        784,
+        2720
       ],
-      "id": "478fa65a-0cde-46d3-ad26-50d8c3efc9cd",
+      "id": "fc435a06-5d38-47bc-9158-8ce94148c89b",
       "name": "Get my User",
       "credentials": {
         "twitterOAuth1Api": {
@@ -759,15 +759,15 @@
     {
       "parameters": {
         "mode": "runOnceForEachItem",
-        "jsCode": "const response = $input.item.json.data;\nconst createdAt = new Date(response.created_at);\n\n// Format like: \"2 June 2009\"\nconst createdDate = createdAt.toLocaleDateString('en-GB', {\n  day: 'numeric',\n  month: 'long',\n  year: 'numeric'\n});\n\nlet message = `Your account was created on ${createdDate}.`;\n\n// Metrics\nconst metrics = response.public_metrics;\n\nfunction formatCount(n) {\n  if (n >= 1_000_000_000) return `${Math.round(n / 1_000_000_000)} billion`;\n  if (n >= 1_000_000) return `${Math.round(n / 1_000_000)} million`;\n  if (n >= 1_000) return `${Math.round(n / 1_000)} thousand`;\n  return `${Math.round(n)}`;\n}\n\nconst followers = formatCount(metrics.followers_count);\nconst following = formatCount(metrics.following_count);\nconst tweets = formatCount(metrics.tweet_count);\n\nmessage += ` You have about ${followers} followers, ${following} following, and have posted roughly ${tweets} tweets.`;\n\nconst pinned_tweet_id = response.pinned_tweet_id || ''\nconst most_recent_tweet_id = response.most_recent_tweet_id || ''\n\nreturn {\n  error: false,\n  message,\n  id: response.id,\n  created_date: createdDate,\n  bio: response.description,\n  metrics: response.public_metrics,\n  pinned_tweet_id,\n  most_recent_tweet_id\n};"
+        "jsCode": "const response = $input.item.json.data;\nconst createdAt = new Date(response.created_at);\n\n// Format like: \"2 June 2009\"\nconst createdDate = createdAt.toLocaleDateString('en-GB', {\n  day: 'numeric',\n  month: 'long',\n  year: 'numeric'\n});\n\nlet message = `Your account was created on ${createdDate}.`;\n\n// Metrics\nconst metrics = response.public_metrics;\n\nfunction formatCount(n) {\n  if (n >= 1_000_000_000) return `${Math.round(n / 1_000_000_000)} billion`;\n  if (n >= 1_000_000) return `${Math.round(n / 1_000_000)} million`;\n  if (n >= 1_000) return `${Math.round(n / 1_000)} thousand`;\n  return `${Math.round(n)}`;\n}\n\nconst followers = formatCount(metrics.followers_count);\nconst following = formatCount(metrics.following_count);\nconst tweets = formatCount(metrics.tweet_count);\n\nmessage += ` You have about ${followers} followers, ${following} following, and have posted roughly ${tweets} tweets.`;\n\nconst pinned_tweet_id = response.pinned_tweet_id || '';\nconst most_recent_tweet_id = response.most_recent_tweet_id || '';\n\n// Prepare voice-friendly additions\nconst pinnedExists = Boolean(pinned_tweet_id);\nconst recentExists = Boolean(most_recent_tweet_id);\n\nif (pinnedExists && recentExists) {\n  message += \" I have retrieved both their pinned tweet and their most recent tweet.\";\n} else if (pinnedExists) {\n  message += \" I have retrieved their pinned tweet.\";\n} else if (recentExists) {\n  message += \" I have retrieved their most recent tweet.\";\n}\n\nreturn {\n  error: false,\n  message,\n  id: response.id,\n  name: response.name,\n  username: response.username,\n  created_date: createdDate,\n  bio: response.description,\n  metrics: response.public_metrics,\n  pinned_tweet_id,\n  most_recent_tweet_id\n};"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        224,
-        2464
+        1008,
+        2720
       ],
-      "id": "fb94b8be-2f3a-4bca-b3da-bcfa425afa55",
+      "id": "30a9699d-d921-4479-98cf-4d4e6ec37fe9",
       "name": "Format Get my User"
     },
     {
@@ -778,10 +778,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        224,
-        1504
+        1008,
+        1760
       ],
-      "id": "6e749eea-a5bb-4184-91f0-67c941fb7396",
+      "id": "eab62695-78f1-454b-9f18-5eebef27d245",
       "name": "Handle User Interact Error"
     },
     {
@@ -792,10 +792,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        224,
-        624
+        1008,
+        560
       ],
-      "id": "f4c4f65e-84f6-41c2-ac73-857df9a1a4a3",
+      "id": "326d571e-5e10-4d24-bd99-b07304519871",
       "name": "Handle Tweet Interact Error"
     },
     {
@@ -810,10 +810,10 @@
       "type": "n8n-nodes-base.twitter",
       "typeVersion": 2,
       "position": [
-        0,
-        240
+        784,
+        544
       ],
-      "id": "3dd3cc1e-03ab-497a-baf3-e84e6412f70a",
+      "id": "2ca3efec-b33f-4a1b-be17-0d46e739008f",
       "name": "Like Tweet",
       "credentials": {
         "twitterOAuth2Api": {
@@ -835,10 +835,10 @@
       "type": "n8n-nodes-base.twitter",
       "typeVersion": 2,
       "position": [
-        0,
-        864
+        784,
+        1120
       ],
-      "id": "10093d2c-4475-46e3-8709-5dfd7743d4d5",
+      "id": "2c365e08-4d7c-44e7-8460-60c256948e88",
       "name": "Retweet Tweet",
       "credentials": {
         "twitterOAuth2Api": {
@@ -860,10 +860,10 @@
       "type": "n8n-nodes-base.twitter",
       "typeVersion": 2,
       "position": [
-        0,
-        0
+        784,
+        352
       ],
-      "id": "767902e3-7545-421d-834c-1aee06a96297",
+      "id": "140059f0-b06d-4ec9-a6af-b90197e4d1ce",
       "name": "Delete Tweet",
       "credentials": {
         "twitterOAuth2Api": {
@@ -876,15 +876,15 @@
     {
       "parameters": {
         "mode": "runOnceForEachItem",
-        "jsCode": "// Extract action and response\nconst action = $('Validate Input').item.json.action\n\nconst response = (action === 'unlike_tweet' || action === 'unretweet_tweet') \n  ? $input.item.json.data \n  : $input.item.json;\n\n\n// Helper to create a voice-friendly message\nlet message = '';\nlet error;\n\nswitch(action) {\n  case 'like_tweet':\n    error = !response.liked;\n    message = response.liked\n      ? \"I have liked the tweet.\"\n      : \"I could not like that tweet.\";\n    break;\n\n  case 'unlike_tweet':\n    error = response.liked;\n    message = !response.liked\n      ? \"I have unliked the tweet.\"\n      : \"The tweet is still liked.\";\n    break;\n\n  case 'retweet_tweet':\n    error = !response.retweeted;\n    message = response.retweeted\n      ? \"I have retweeted the tweet.\"\n      : \"I could not retweet that tweet.\";\n    break;\n\n  case 'unretweet_tweet':\n    error = response.retweeted;\n    message = !response.retweeted\n      ? \"I have removed your retweet.\"\n      : \"The retweet is still active.\";\n    break;\n\n  case 'delete_tweet':\n    error = !response.deleted;\n    message = response.deleted\n      ? \"I have deleted the tweet.\"\n      : \"I could not delete that tweet.\";\n    break;\n\n  case 'hide_tweet_replies':\n    error = !response.hidden;\n    message = response.hidden\n      ? \"Replies to this tweet have been hidden.\"\n      : \"Unable to hide replies.\";\n    break;\n\n  case 'unhide_tweet_replies':\n    error = response.hidden;\n    message = !response.hidden\n      ? \"Replies to this tweet are now visible.\"\n      : \"Replies are still hidden.\";\n    break;\n\n  default:\n    error = false;\n    message = \"Action completed successfully.\";\n}\n\n// Return the voice-friendly message\nreturn {\n  error,\n  message\n};"
+        "jsCode": "// Extract action and response\nconst action = $('Validate Input').item.json.action\n\nconst response = (action === 'unlike_tweet' || action === 'unretweet_tweet') \n  ? $input.item.json.data \n  : $input.item.json;\n\n\n// Helper to create a voice-friendly message\nlet message = '';\nlet error;\n\nswitch(action) {\n  case 'like_tweet':\n    error = !response.liked;\n    message = response.liked\n      ? \"I have liked the tweet.\"\n      : \"I could not like that tweet.\";\n    break;\n\n  case 'unlike_tweet':\n    error = response.liked;\n    message = !response.liked\n      ? \"I have unliked the tweet.\"\n      : \"The tweet is still liked.\";\n    break;\n\n  case 'retweet_tweet':\n    error = !response.retweeted;\n    message = response.retweeted\n      ? \"I have retweeted the tweet.\"\n      : \"I could not retweet that tweet.\";\n    break;\n\n  case 'unretweet_tweet':\n    error = response.retweeted;\n    message = !response.retweeted\n      ? \"I have removed your retweet.\"\n      : \"The retweet is still active.\";\n    break;\n\n  case 'delete_tweet':\n    error = !response.deleted;\n    message = response.deleted\n      ? \"I have deleted the tweet.\"\n      : \"I could not delete that tweet.\";\n    break;\n\n  case 'hide_tweet_replies':\n    error = !response.hidden;\n    message = response.hidden\n      ? \"Replies to this tweet have been hidden.\"\n      : \"Unable to hide replies.\";\n    break;\n\n  case 'unhide_tweet_replies':\n    error = response.hidden;\n    message = !response.hidden\n      ? \"Replies to this tweet are now visible.\"\n      : \"Replies are still hidden.\";\n    break;\n\n  default:\n    error = false;\n    message = \"Action completed successfully.\";\n}\n\n// Return the voice-friendly message\nreturn {\n  error,\n  message,\n  tweet_ID: $('Validate Input').item.json.tweet_id\n};"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        224,
-        384
+        1008,
+        832
       ],
-      "id": "72b9f6da-a7f2-47ab-9412-0c48c1db1116",
+      "id": "a0e1b16c-dee1-442a-a392-7eb8510b1627",
       "name": "Handle Tweet Interact Success"
     },
     {
@@ -904,10 +904,10 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.3,
       "position": [
-        0,
-        432
+        784,
+        736
       ],
-      "id": "95ec329c-e45b-4d1b-bbe4-3d41dc582e55",
+      "id": "7f72a75d-72fb-4891-b0ca-b600ea14abed",
       "name": "Unlike Tweet",
       "credentials": {
         "twitterOAuth1Api": {
@@ -934,10 +934,10 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.3,
       "position": [
-        0,
-        672
+        784,
+        928
       ],
-      "id": "25daaf45-f868-429d-90c6-300e621ad2ba",
+      "id": "57d7aa0d-ae18-4c5a-964f-024a5a069dfd",
       "name": "Unretweet Tweet",
       "credentials": {
         "twitterOAuth1Api": {
@@ -1132,10 +1132,10 @@
       "type": "n8n-nodes-base.switch",
       "typeVersion": 3.4,
       "position": [
-        -224,
-        384
+        560,
+        528
       ],
-      "id": "212fbbe4-666c-4101-b8d3-d277ee7ceb08",
+      "id": "6c9ff51a-7e80-4470-b03f-8231a44a550d",
       "name": "Tweet Action Switch"
     },
     {
@@ -1146,10 +1146,10 @@
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        -976,
-        2000
+        -192,
+        2288
       ],
-      "id": "26550088-8635-4a0e-9c32-846d2426a20a",
+      "id": "ed4346e7-d833-420c-9a20-d87b7fa224d2",
       "name": "Sticky Note"
     },
     {
@@ -1163,6 +1163,10 @@
             {
               "name": "tweet.fields",
               "value": "created_at,id,public_metrics,text"
+            },
+            {
+              "name": "expansions",
+              "value": "author_id"
             }
           ]
         },
@@ -1171,10 +1175,10 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.3,
       "position": [
-        0,
-        -176
+        784,
+        128
       ],
-      "id": "b9499831-98fe-4bc3-bb5e-9188d46940a7",
+      "id": "f6897149-9456-4579-8b6c-8df3978c0bc8",
       "name": "Get Tweet",
       "credentials": {
         "twitterOAuth1Api": {
@@ -1187,15 +1191,15 @@
     {
       "parameters": {
         "mode": "runOnceForEachItem",
-        "jsCode": "// Check for errors first\nconst errors = $input.item.json.errors || [];\n\nif (errors.length > 0) {\n  const err = errors[0];\n  const detail = err.detail || \"An error occurred.\";\n\n  return {\n    error: true,\n    message: `I couldn't find a tweet with the that ID.`,\n    detail\n  };\n}\n\nconst response = $input.item.json.data;\nconst createdAt = new Date(response.created_at);\n\n// Format like: \"2 June 2009\"\nconst createdDate = createdAt.toLocaleDateString('en-GB', {\n  day: 'numeric',\n  month: 'long',\n  year: 'numeric'\n});\n\nconst metrics = response.public_metrics;\n\nfunction formatCount(n) {\n  if (n >= 1_000_000_000) return `${Math.round(n / 1_000_000_000)} billion`;\n  if (n >= 1_000_000) return `${Math.round(n / 1_000_000)} million`;\n  if (n >= 1_000) return `${Math.round(n / 1_000)} thousand`;\n  return `${Math.round(n)}`;\n}\n\nconst views = formatCount(metrics.impression_count);\nconst likes = formatCount(metrics.like_count);\nconst retweets = formatCount(metrics.retweet_count);\nconst replies = formatCount(metrics.reply_count);\nconst quotes = formatCount(metrics.quote_count);\nconst bookmarks = formatCount(metrics.bookmark_count);\n\nconst message = `This tweet says: ${response.text}. It was posted on ${createdDate}. It has ${views} views, ${likes} likes, ${retweets} retweets, ${quotes} quote tweets, ${replies} replies, and ${bookmarks} bookmarks.`;\n\nreturn {\n  error: false,\n  message,\n  tweet_id: response.id,\n  created_date: createdDate,\n  metrics\n};"
+        "jsCode": "// Check for errors first\nconst errors = $input.item.json.errors || [];\n\nif (errors.length > 0) {\n  const err = errors[0];\n  const detail = err.detail || \"An error occurred.\";\n\n  return {\n    error: true,\n    message: `I couldn't find a tweet with the that ID.`,\n    detail\n  };\n}\n\nconst response = $input.item.json.data;\nconst createdAt = new Date(response.created_at);\n\n// Format like: \"2 June 2009\"\nconst createdDate = createdAt.toLocaleDateString('en-GB', {\n  day: 'numeric',\n  month: 'long',\n  year: 'numeric'\n});\n\nconst metrics = response.public_metrics;\n\nfunction formatCount(n) {\n  if (n >= 1_000_000_000) return `${Math.round(n / 1_000_000_000)} billion`;\n  if (n >= 1_000_000) return `${Math.round(n / 1_000_000)} million`;\n  if (n >= 1_000) return `${Math.round(n / 1_000)} thousand`;\n  return `${Math.round(n)}`;\n}\n\nconst views = formatCount(metrics.impression_count);\nconst likes = formatCount(metrics.like_count);\nconst retweets = formatCount(metrics.retweet_count);\nconst replies = formatCount(metrics.reply_count);\nconst quotes = formatCount(metrics.quote_count);\nconst bookmarks = formatCount(metrics.bookmark_count);\n\nconst message = `This tweet says: ${response.text}. It was posted on ${createdDate}. It has ${views} views, ${likes} likes, ${retweets} retweets, ${quotes} quote tweets, ${replies} replies, and ${bookmarks} bookmarks.`;\n\nconst author = $json?.includes?.users?.[0] ?? { username: \"unknown\", name: \"unknown\", id: null };\n\nreturn {\n  error: false,\n  message,\n  author,\n  tweet_id: response.id,\n  created_date: createdDate,\n  metrics\n};"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        256,
-        -160
+        1008,
+        112
       ],
-      "id": "5715e729-376a-4019-8f44-0d28951e72e5",
+      "id": "76eccba6-11c0-4ac7-b2cd-f36f9402c189",
       "name": "Format Get Tweet"
     },
     {
@@ -1206,14 +1210,15 @@
       },
       "type": "n8n-nodes-base.stickyNote",
       "position": [
-        -784,
-        -288
+        0,
+        0
       ],
       "typeVersion": 1,
-      "id": "7473befc-c76c-48cb-a409-a9770ce330c5",
+      "id": "1de11ee4-0ab8-4b07-bf90-04439baa941a",
       "name": "Registry Tracking"
     }
   ],
+  "pinData": {},
   "connections": {
     "Format DM Response": {
       "main": [

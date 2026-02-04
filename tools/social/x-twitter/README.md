@@ -170,6 +170,9 @@ EXAMPLES:
   
   Q: "What does my most recent tweet say?"
   → First use get_my_user to get your most_recent_tweet_id, then use get_tweet with that ID
+
+  Q: "DM @Fortnite saying hello world"
+  → Use dm_user with username: "Fortnite" and text: "hello world"
 ═══════════════════════════════════════════
 ```
 
